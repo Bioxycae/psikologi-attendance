@@ -1,26 +1,26 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+   --pertama: #1B2B48;
+   --kedua: #FBF8FB;
+   --ketiga: #D8E2FF;
+   --keempat: #D97706;
+   --kelima: #F6A9AB;
+   --keenam: #777779;
+   --ketujuh: #0D9488;
+   --kedelapan: #0058BE;
+   --kesembilan: #F5F3F6;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+   box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+   width: 100%;
+   min-height: 100%;
+   font-family: var(--font-poppins), sans-serif;
+   background-color: var(--kedua);
+   color: var(--pertama);
 }

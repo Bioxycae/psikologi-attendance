@@ -1,0 +1,125 @@
+import { apiResponse } from "@/lib/api-response";
+
+import {
+   deleteUser,
+   updateUser,
+} from "@/services/user.service";
+
+import {
+   updateUserSchema,
+} from "@/schemas/user.schema";
+
+type Params = {
+   params: Promise<{
+      id: string;
+   }>;
+};
+
+export async function PUT(
+   request: Request,
+   { params }: Params
+) {
+   try {
+      const { id } =
+         await params;
+
+      const formData =
+         await request.formData();
+
+      const image =
+         formData.get(
+            "image"
+         ) as File | null;
+
+      const validatedFields =
+         updateUserSchema.safeParse({
+            name:
+               formData.get(
+                  "name"
+               ),
+
+            email:
+               formData.get(
+                  "email"
+               ),
+
+            role:
+               formData.get(
+                  "role"
+               ),
+
+            image,
+         });
+
+      if (
+         !validatedFields.success
+      ) {
+         return apiResponse({
+            message:
+               validatedFields
+                  .error
+                  .issues[0]
+                  ?.message ||
+               "Data tidak valid",
+
+            status: 400,
+         });
+      }
+
+      const user =
+         await updateUser({
+            id,
+            ...validatedFields.data,
+         });
+
+      return apiResponse({
+         message:
+            "User berhasil diupdate",
+
+         data: user,
+      });
+   } catch (
+      error
+   ) {
+      console.error(
+         error
+      );
+
+      return apiResponse({
+         message:
+            "Gagal mengupdate user",
+
+         status: 500,
+      });
+   }
+}
+
+export async function DELETE(
+   request: Request,
+   { params }: Params
+) {
+   try {
+      const { id } =
+         await params;
+
+      await deleteUser(id);
+
+      return apiResponse({
+         message:
+            "User berhasil dihapus",
+      });
+   } catch (
+      error
+   ) {
+      console.error(
+         error
+      );
+
+      return apiResponse({
+         message:
+            "Gagal menghapus user",
+
+         status: 500,
+      });
+   }
+}
