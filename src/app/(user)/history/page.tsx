@@ -106,6 +106,11 @@ const HistoryPage =
                   `/api/attendance/history?user_id=${userId}&limit=${LIMIT}&offset=${offset}`
                );
 
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+               return;
+            }
+
             const result =
                await response.json() as AttendanceHistoryResponse;
 
@@ -138,6 +143,11 @@ const HistoryPage =
                      await fetch(
                         "/api/users/me"
                      );
+
+                  const contentType = userResponse.headers.get("content-type");
+                  if (!contentType || !contentType.includes("application/json")) {
+                     return;
+                  }
 
                   const userResult =
                      await userResponse.json() as UserResponse;
@@ -219,25 +229,29 @@ const HistoryPage =
             result =
                result.filter(
                   session => {
-                     const formattedDate =
-                        new Date(
-                           session.attendance_time
-                        ).toLocaleDateString(
-                           "id-ID"
-                        );
+                      const formattedDate =
+                         new Date(
+                            session.attendance_time
+                         ).toLocaleDateString(
+                            "id-ID",
+                            {
+                               timeZone: "Asia/Jakarta",
+                            }
+                         );
 
-                     const formattedTime =
-                        new Date(
-                           session.attendance_time
-                        ).toLocaleTimeString(
-                           "en-GB",
-                           {
-                              hour:
-                                 "2-digit",
-                              minute:
-                                 "2-digit",
-                           }
-                        );
+                      const formattedTime =
+                         new Date(
+                            session.attendance_time
+                         ).toLocaleTimeString(
+                            "en-GB",
+                            {
+                               hour:
+                                  "2-digit",
+                               minute:
+                                  "2-digit",
+                               timeZone: "Asia/Jakarta",
+                            }
+                         );
 
                      const searchValue =
                         search.toLowerCase();
@@ -383,6 +397,7 @@ const HistoryPage =
                      "2-digit",
                   minute:
                      "2-digit",
+                  timeZone: "Asia/Jakarta",
                }
             );
          };
@@ -417,9 +432,12 @@ const HistoryPage =
                      return [
                         `PL-${session.id}`,
                         session.user_name,
-                        attendanceDate.toLocaleDateString(
-                           "en-GB"
-                        ),
+                         attendanceDate.toLocaleDateString(
+                            "en-GB",
+                            {
+                               timeZone: "Asia/Jakarta",
+                            }
+                         ),
                         formatTime(
                            session.attendance_time
                         ),

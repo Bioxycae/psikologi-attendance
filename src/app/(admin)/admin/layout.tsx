@@ -1,7 +1,7 @@
 import { MobileHeader } from "@/components/layouts/MobileHeader";
 import { NavItem } from "@/components/layouts/NavItem";
 import { Sidebar } from "@/components/layouts/Sidebar";
-import { LayoutDashboard, Settings } from "lucide-react";
+import { LayoutDashboard, Settings, Globe } from "lucide-react";
 import { ReactNode } from "react";
 
 type AdminLayoutProps = {
@@ -27,6 +27,13 @@ const AdminLayout = ({
                   icon={<Settings size={22} />}
                >
                   Manage
+               </NavItem>
+
+               <NavItem
+                  href="/admin/usertrack"
+                  icon={<Globe size={22} />}
+               >
+                  User Track
                </NavItem>
             </div>
          </Sidebar>

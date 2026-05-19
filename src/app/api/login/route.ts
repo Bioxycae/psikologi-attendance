@@ -74,6 +74,32 @@ export async function POST(request: Request) {
             role: user.role,
          });
 
+      const ipAddress = (request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()) || request.headers.get("x-real-ip") || "127.0.0.1";
+      const userAgent = request.headers.get("user-agent") || "Unknown Device";
+
+      await supabase
+         .from("user_sessions")
+         .delete()
+         .eq("user_id", user.id)
+         .eq("ip_address", ipAddress)
+         .eq("device_info", userAgent);
+
+      const { error: sessionError } = await supabase
+         .from("user_sessions")
+         .insert({
+            user_id: user.id,
+            token: token,
+            ip_address: ipAddress,
+            device_info: userAgent,
+         });
+
+      if (sessionError) {
+         return apiResponse({
+            message: "Gagal membuat sesi di server",
+            status: 500,
+         });
+      }
+
       const response =
          apiResponse({
             data: {

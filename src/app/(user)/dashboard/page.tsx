@@ -84,6 +84,11 @@ const DashboardPage = () => {
                `/api/attendance/history?user_id=${userId}&limit=${LIMIT}&offset=${offset}`
             );
 
+         const contentType = response.headers.get("content-type");
+         if (!contentType || !contentType.includes("application/json")) {
+            return;
+         }
+
          const result =
             await response.json() as AttendanceHistoryResponse;
 
@@ -116,6 +121,11 @@ const DashboardPage = () => {
                   await fetch(
                      "/api/users/me"
                   );
+
+               const contentType = userResponse.headers.get("content-type");
+               if (!contentType || !contentType.includes("application/json")) {
+                  return;
+               }
 
                const userResult =
                   await userResponse.json() as UserResponse;

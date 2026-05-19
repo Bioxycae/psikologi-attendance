@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { SESSION_COOKIE } from "@/constants/auth.constant";
+import { createServerSupabase } from "@/lib/supabase/server";
 
 import type { SessionPayload } from "@/types/auth.type";
 
@@ -23,7 +24,7 @@ export const createSession = async (
          alg: "HS256",
       })
       .setIssuedAt()
-      .setExpirationTime("7d")
+      .setExpirationTime("3650d")
       .sign(secret);
 };
 
@@ -33,6 +34,17 @@ export const verifySession = async (
    try {
       const { payload } =
          await jwtVerify(token, secret);
+
+      const supabase = createServerSupabase();
+      const { data: dbSession, error } = await supabase
+         .from("user_sessions")
+         .select("id")
+         .eq("token", token)
+         .single();
+
+      if (error || !dbSession) {
+         return null;
+      }
 
       return payload as SessionPayload;
    } catch {

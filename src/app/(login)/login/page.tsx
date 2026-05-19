@@ -10,6 +10,7 @@ import {
     BrainCircuit,
     Eye,
     EyeOff,
+    Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -20,6 +21,7 @@ import { toast } from "sonner";
 const LoginPage = () => {
    const router = useRouter();
    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+   const [isSubmitting, setIsSubmitting] = useState(false);
 
    const {
       register,
@@ -33,6 +35,7 @@ const LoginPage = () => {
       data: LoginSchema
    ) => {
       try {
+         setIsSubmitting(true);
          const response = await fetch(
             "/api/login",
             {
@@ -52,7 +55,7 @@ const LoginPage = () => {
             toast.error(result.message, {
                id: "login-error",
             });
-
+            setIsSubmitting(false);
             return;
          }
 
@@ -74,6 +77,7 @@ const LoginPage = () => {
                id: "server-error",
             }
          );
+         setIsSubmitting(false);
       }
    };
 
@@ -165,9 +169,17 @@ const LoginPage = () => {
 
                         <Button
                            type="submit"
-                           className="mt-1 h-11 rounded-md text-base font-bold"
+                           disabled={isSubmitting}
+                           className="mt-1 h-11 rounded-md text-base font-bold flex items-center justify-center gap-2"
                         >
-                           Login
+                           {isSubmitting ? (
+                              <>
+                                 <Loader2 size={18} className="animate-spin" />
+                                 Logging in...
+                              </>
+                           ) : (
+                              "Login"
+                           )}
                         </Button>
                      </div>
                   </form>

@@ -45,6 +45,11 @@ const VerifyPage = () => {
       const fetchSession = async () => {
          try {
             const response = await fetch(`/api/attendance/${id}`);
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+               setError("Failed to verify attendance session");
+               return;
+            }
             const result = await response.json() as ApiResponse;
 
             if (result.success && result.data) {

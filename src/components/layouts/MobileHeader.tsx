@@ -12,6 +12,7 @@ import {
     Settings,
     UserRoundCog,
     X,
+    Globe,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -53,6 +54,11 @@ export const MobileHeader = ({
                href: "/admin/manage",
                label: "Manage",
                icon: <Settings size={20} />,
+            },
+            {
+               href: "/admin/usertrack",
+               label: "User Track",
+               icon: <Globe size={20} />,
             },
          ]
          : [

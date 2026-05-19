@@ -14,14 +14,16 @@ const expressions = [
    "happy",
    "surprised",
    "angry",
-   "sad",
+   "neutral"
+   // "sad",
 ] as const;
 
 const expressionLabels = {
    happy: "Smile",
    surprised: "Surprised",
    angry: "Angry",
-   sad: "Sad",
+   neutral: "Neutral",
+   // sad: "Sad",
 };
 
 type ExpressionType =

@@ -13,6 +13,12 @@ const poppins = Poppins({
 export const metadata: Metadata = {
    title: "Presensi Psikologi",
    description: "Sistem Presensi Asisten Laboratorium Psikologi",
+   formatDetection: {
+      telephone: false,
+      date: false,
+      address: false,
+      email: false,
+   },
 };
 
 export default function RootLayout({
@@ -21,8 +27,8 @@ export default function RootLayout({
    children: React.ReactNode;
 }>) {
    return (
-      <html lang="id" data-scroll-behavior="smooth" className={`${poppins.variable} `}>
-         <body className="min-h-screen bg-(--background) text-(--pertama)">
+      <html lang="id" data-scroll-behavior="smooth" className={`${poppins.variable} `} suppressHydrationWarning>
+         <body className="min-h-screen bg-(--background) text-(--pertama)" suppressHydrationWarning>
             <FaceModelPreloader />
             {children}
             <Toaster position="top-center" richColors />

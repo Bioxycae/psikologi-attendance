@@ -12,6 +12,7 @@ export const formatAttendanceDate =
                day: "2-digit",
                month: "long",
                year: "numeric",
+               timeZone: "Asia/Jakarta",
             }
          ).format(date);
 

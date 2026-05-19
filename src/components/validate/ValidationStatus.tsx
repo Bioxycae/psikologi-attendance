@@ -1,4 +1,4 @@
-import { CheckSquare } from "lucide-react";
+import { CheckSquare, Loader2 } from "lucide-react";
 
 type ValidationStatusProps = {
    mode: string;
@@ -207,7 +207,11 @@ export const ValidationStatus = ({
 
             className="hidden h-26 cursor-pointer items-center justify-center gap-4 rounded-md bg-(--pertama) px-6 text-2xl font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50 xl:flex"
          >
-            <CheckSquare size={28} />
+            {isFaceProcessing || isLivenessProcessing || isSubmittingAttendance ? (
+               <Loader2 size={28} className="animate-spin" />
+            ) : (
+               <CheckSquare size={28} />
+            )}
 
             {mobileButtonLabel}
          </button>
@@ -218,7 +222,11 @@ export const ValidationStatus = ({
             disabled={isMobileButtonDisabled}
             className="flex h-16 cursor-pointer items-center justify-center gap-4 rounded-md bg-(--pertama) px-6 text-lg font-semibold text-white shadow-md disabled:cursor-not-allowed disabled:opacity-50 xl:hidden"
          >
-            <CheckSquare size={26} />
+            {isFaceProcessing || isLivenessProcessing || isSubmittingAttendance ? (
+               <Loader2 size={26} className="animate-spin" />
+            ) : (
+               <CheckSquare size={26} />
+            )}
             {mobileButtonLabel}
          </button>
       </div>

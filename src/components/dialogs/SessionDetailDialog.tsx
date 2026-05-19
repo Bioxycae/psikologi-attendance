@@ -1,4 +1,5 @@
 import { QRCodeSVG } from "qrcode.react";
+import { useEffect, useState } from "react";
 
 import { formatAttendanceDate } from "@/utils/formatDate";
 
@@ -11,6 +12,12 @@ export const SessionDetailDialog = ({
    session,
    onClose,
  }: SessionDetailDialogProps) => {
+   const [qrUrl, setQrUrl] = useState("");
+
+   useEffect(() => {
+      setQrUrl(`${window.location.origin}/verify/${session.id}`);
+   }, [session.id]);
+
    return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
          <div className="w-full max-w-2xl md:max-w-5xl rounded-2xl border border-(--pertama) bg-(--kesembilan) p-8 shadow-2xl transition-all duration-300">
@@ -48,7 +55,7 @@ export const SessionDetailDialog = ({
             <div className="mt-6 grid grid-cols-1 md:grid-cols-[280px_1fr] gap-6 items-stretch">
                <div className="flex items-center justify-center rounded-xl border border-(--pertama) bg-white p-6 w-full">
                   <QRCodeSVG
-                     value={`${typeof window !== "undefined" ? window.location.origin : ""}/verify/${session.id}`}
+                     value={qrUrl}
                      className="w-full h-full max-w-[200px] aspect-square"
                      bgColor="#FBF8FB"
                      fgColor="#1B2B48"

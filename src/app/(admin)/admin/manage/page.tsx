@@ -38,6 +38,10 @@ const ManagePage = () => {
    const fetchUsers = async (offset = 0, append = false) => {
       try {
          const response = await fetch(`/api/users?limit=${LIMIT}&offset=${offset}`);
+         const contentType = response.headers.get("content-type");
+         if (!contentType || !contentType.includes("application/json")) {
+            return;
+         }
          const result = await response.json();
 
          if (!result.success) {
@@ -55,6 +59,10 @@ const ManagePage = () => {
    const fetchSettings = async () => {
       try {
          const response = await fetch("/api/settings");
+         const contentType = response.headers.get("content-type");
+         if (!contentType || !contentType.includes("application/json")) {
+            return;
+         }
          const result = await response.json();
 
          if (!result.success) {

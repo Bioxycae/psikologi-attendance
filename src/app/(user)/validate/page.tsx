@@ -4,6 +4,7 @@ import {
    CheckSquare,
    MapPinCheck,
    ScanFace,
+   Loader2,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -145,7 +146,11 @@ const ValidatePage = () => {
 
                         className="flex h-14 sm:h-22 min-w-0 cursor-pointer flex-col items-center justify-center gap-1 sm:gap-2 rounded-md bg-(--pertama) px-3 sm:px-4 text-sm sm:text-base font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50 lg:h-26 lg:min-w-45"
                      >
-                        <MapPinCheck size={24} className="hidden sm:block" />
+                        {location.isLoading ? (
+                           <Loader2 size={24} className="hidden sm:block animate-spin" />
+                        ) : (
+                           <MapPinCheck size={24} className="hidden sm:block" />
+                        )}
 
                         {location.isLoading
                            ? "Checking..."
@@ -160,13 +165,17 @@ const ValidatePage = () => {
                      }
 
                      disabled={
-                        !location.isLocationPassed || attendanceMode === "completed"
+                        !location.isLocationPassed || attendanceMode === "completed" || camera.isCameraLoading
                      }
 
                      className="flex h-14 sm:h-22 min-w-0 cursor-pointer flex-col items-center justify-center gap-1 sm:gap-2 rounded-md bg-(--pertama) px-3 sm:px-4 text-sm sm:text-base font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-500 disabled:opacity-90 lg:h-26 lg:min-w-35"
                   >
-                     <ScanFace size={24} className="hidden sm:block" />
-                     Open Cam
+                     {camera.isCameraLoading ? (
+                        <Loader2 size={24} className="hidden sm:block animate-spin" />
+                     ) : (
+                        <ScanFace size={24} className="hidden sm:block" />
+                     )}
+                     {camera.isCameraLoading ? "Opening..." : "Open Cam"}
                   </button>
                </div>
             </div>

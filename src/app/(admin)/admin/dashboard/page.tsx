@@ -94,6 +94,11 @@ const AdminDashboardPage = () => {
       const loadDashboard = async () => {
          try {
             const response = await fetch("/api/admin/dashboard");
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+               toast.error("Failed to load admin dashboard");
+               return;
+            }
             const result = await response.json() as AdminDashboardResponse;
 
             if (!result.success) {

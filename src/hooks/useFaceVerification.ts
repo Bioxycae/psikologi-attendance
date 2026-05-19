@@ -49,7 +49,7 @@ export const useFaceVerification = (
       return await faceapi
          .detectSingleFace(
             image,
-            new faceapi.TinyFaceDetectorOptions()
+            new faceapi.TinyFaceDetectorOptions({ inputSize: 224 })
          )
          .withFaceLandmarks(true)
          .withFaceDescriptor();
@@ -64,7 +64,7 @@ export const useFaceVerification = (
          return await faceapi
             .detectSingleFace(
                videoRef.current,
-               new faceapi.TinyFaceDetectorOptions()
+               new faceapi.TinyFaceDetectorOptions({ inputSize: 224 })
             )
             .withFaceLandmarks(true)
             .withFaceDescriptor();
@@ -119,6 +119,18 @@ export const useFaceVerification = (
                ),
             ]);
 
+            const contentTypeUsers = usersResponse.headers.get("content-type");
+            const contentTypeSession = sessionResponse.headers.get("content-type");
+            if (
+               !contentTypeUsers || !contentTypeUsers.includes("application/json") ||
+               !contentTypeSession || !contentTypeSession.includes("application/json")
+            ) {
+               toast.error("Gagal mendapatkan data sesi pengguna", {
+                  id: "face-scan",
+               });
+               return;
+            }
+
             const usersResult =
                await usersResponse.json();
 
@@ -131,61 +143,13 @@ export const useFaceVerification = (
             const currentUserName =
                sessionResult.data?.name;
 
-            let bestMatch:
-               | string
-               | null = null;
-
-            let bestDistance =
-               999;
-
-            for (const user of users) {
-               if (
-                  !user.image_url
-               ) {
-                  continue;
-               }
-
-               const registeredFace =
-                  await getFaceDescriptor(
-                     user.image_url
-                  );
-
-               if (
-                  !registeredFace
-               ) {
-                  continue;
-               }
-
-               const distance =
-                  faceapi.euclideanDistance(
-                     currentFace.descriptor,
-                     registeredFace.descriptor
-                  );
-
-               if (
-                  distance <
-                  bestDistance
-               ) {
-                  bestDistance =
-                     distance;
-
-                  bestMatch =
-                     user.name;
-               }
-            }
-
-            const isMatched =
-               bestDistance < 0.5;
-
-            setMatchedUser(
-               isMatched
-                  ? bestMatch
-                  : null
+            const currentUserData = users.find(
+               (user: { name: string; image_url: string | null }) => user.name === currentUserName
             );
 
-            if (!isMatched) {
+            if (!currentUserData || !currentUserData.image_url) {
                toast.error(
-                  "Face tidak cocok",
+                  "Wajah terdaftar tidak ditemukan",
                   {
                      id: "face-scan",
                   }
@@ -194,19 +158,46 @@ export const useFaceVerification = (
                return;
             }
 
-            const isCorrectAccount =
-               bestMatch ===
-               currentUserName;
-
-            setIsFaceVerified(
-               isCorrectAccount
-            );
+            const registeredFace =
+               await getFaceDescriptor(
+                  currentUserData.image_url
+               );
 
             if (
-               !isCorrectAccount
+               !registeredFace
             ) {
                toast.error(
-                  `Detected as ${bestMatch}, but logged in as ${currentUserName}`,
+                  "Wajah terdaftar tidak valid",
+                  {
+                     id: "face-scan",
+                  }
+               );
+
+               return;
+            }
+
+            const distance =
+               faceapi.euclideanDistance(
+                  currentFace.descriptor,
+                  registeredFace.descriptor
+               );
+
+            const isMatched =
+               distance < 0.5;
+
+            setMatchedUser(
+               isMatched
+                  ? currentUserData.name
+                  : null
+            );
+
+            setIsFaceVerified(
+               isMatched
+            );
+
+            if (!isMatched) {
+               toast.error(
+                  "Wajah tidak cocok",
                   {
                      id: "face-scan",
                   }
@@ -216,7 +207,7 @@ export const useFaceVerification = (
             }
 
             toast.success(
-               `Matched with ${bestMatch}`,
+               `Matched with ${currentUserData.name}`,
                {
                   id: "face-scan",
                }

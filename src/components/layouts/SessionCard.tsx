@@ -112,7 +112,10 @@ export const SessionCard = ({
 
                   <p className="font-medium">
                      {attendanceDate.toLocaleDateString(
-                        "en-GB"
+                        "en-GB",
+                        {
+                           timeZone: "Asia/Jakarta",
+                        }
                      )}
                   </p>
                </div>
@@ -130,6 +133,7 @@ export const SessionCard = ({
                               "2-digit",
                            minute:
                               "2-digit",
+                           timeZone: "Asia/Jakarta",
                         }
                      )}
                   </p>
@@ -151,6 +155,7 @@ export const SessionCard = ({
                                  "2-digit",
                               minute:
                                  "2-digit",
+                              timeZone: "Asia/Jakarta",
                            }
                         )
                         : "-"}
