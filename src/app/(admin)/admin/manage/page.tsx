@@ -130,7 +130,7 @@ const ManagePage = () => {
             <button
                onClick={() => setIsCreateOpen(true)}
                type="button"
-               className="flex h-[100px] w-full lg:w-32 shrink-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl bg-(--pertama) text-(--kedua) transition-all hover:opacity-90"
+               className="flex h-25 w-full lg:w-32 shrink-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl bg-(--pertama) text-(--kedua) transition-all hover:opacity-90"
             >
                <Plus size={32} />
                <span className="text-sm font-medium">Create User</span>
@@ -140,7 +140,7 @@ const ManagePage = () => {
          <div className="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 lg:grid lg:grid-cols-3 lg:overflow-visible lg:pb-0">
             {settings && (
                <>
-                  <div className="min-w-[300px] snap-center shrink-0 rounded-xl border border-(--pertama) bg-(--kesembilan) p-6 lg:min-w-0">
+                  <div className="min-w-75 snap-center shrink-0 rounded-xl border border-(--pertama) bg-(--kesembilan) p-6 lg:min-w-0">
                      <div className="flex items-start justify-between">
                         <div>
                            <p className="text-xs font-medium text-(--keenam)">Attendance Settings</p>
@@ -163,7 +163,7 @@ const ManagePage = () => {
                      </div>
                   </div>
 
-                  <div className="min-w-[300px] snap-center shrink-0 rounded-xl border border-(--pertama) bg-(--kesembilan) p-6 lg:min-w-0">
+                  <div className="min-w-75 snap-center shrink-0 rounded-xl border border-(--pertama) bg-(--kesembilan) p-6 lg:min-w-0">
                      <div className="flex items-start justify-between">
                         <div>
                            <p className="text-xs font-medium text-(--keenam)">Attendance Settings</p>
@@ -191,7 +191,7 @@ const ManagePage = () => {
             {admins.map((admin) => (
                <div
                   key={admin.id}
-                  className="min-w-[300px] snap-center shrink-0 rounded-xl border border-(--pertama) bg-(--kesembilan) p-6 lg:min-w-0"
+                  className="min-w-75 snap-center shrink-0 rounded-xl border border-(--pertama) bg-(--kesembilan) p-6 lg:min-w-0"
                >
                   <div className="flex items-start justify-between">
                      <span className="text-xs font-medium text-(--keenam)">
