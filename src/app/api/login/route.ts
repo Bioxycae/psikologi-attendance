@@ -112,8 +112,11 @@ export async function POST(request: Request) {
          token,
          {
             httpOnly: true,
-            secure: true,
-            sameSite: "none",
+            secure:
+               process.env
+                  .NODE_ENV ===
+               "production",
+            sameSite: "lax",
             path: "/",
             maxAge:
                SESSION_DURATION,

@@ -5,11 +5,21 @@ import { createUser, getUsers } from "@/services/user.service";
 import {
    createUserSchema,
 } from "@/schemas/user.schema";
+import { getSession } from "@/lib/auth";
 
 export async function GET(
    request: Request
 ) {
    try {
+      const session = await getSession();
+
+      if (!session || session.role !== "admin") {
+         return apiResponse({
+            message: "Unauthorized",
+            status: 401,
+         });
+      }
+
       const {
          searchParams,
       } = new URL(
@@ -59,6 +69,15 @@ export async function POST(
    request: Request
 ) {
    try {
+      const session = await getSession();
+
+      if (!session || session.role !== "admin") {
+         return apiResponse({
+            message: "Unauthorized",
+            status: 401,
+         });
+      }
+
       const formData =
          await request.formData();
 

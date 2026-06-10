@@ -11,10 +11,10 @@ export async function proxy(request: NextRequest) {
    const token =
       request.cookies.get("session")?.value;
 
-   const session =
-      token
-         ? await verifySession(token)
-         : null;
+   let session = null;
+   if (token) {
+      session = await verifySession(token);
+   }
 
    const isLoggedIn =
       !!session;

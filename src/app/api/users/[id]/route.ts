@@ -8,6 +8,7 @@ import {
 import {
    updateUserSchema,
 } from "@/schemas/user.schema";
+import { getSession } from "@/lib/auth";
 
 type Params = {
    params: Promise<{
@@ -20,6 +21,15 @@ export async function PUT(
    { params }: Params
 ) {
    try {
+      const session = await getSession();
+
+      if (!session || session.role !== "admin") {
+         return apiResponse({
+            message: "Unauthorized",
+            status: 401,
+         });
+      }
+
       const { id } =
          await params;
 
@@ -99,6 +109,15 @@ export async function DELETE(
    { params }: Params
 ) {
    try {
+      const session = await getSession();
+
+      if (!session || session.role !== "admin") {
+         return apiResponse({
+            message: "Unauthorized",
+            status: 401,
+         });
+      }
+
       const { id } =
          await params;
 

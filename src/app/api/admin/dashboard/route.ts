@@ -1,3 +1,5 @@
+import { apiResponse } from "@/lib/api-response";
+import { getSession } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 import {
@@ -7,6 +9,15 @@ import {
 export const GET =
    async () => {
       try {
+         const session = await getSession();
+
+         if (!session || session.role !== "admin") {
+            return apiResponse({
+               message: "Unauthorized",
+               status: 401,
+            });
+         }
+
          const overview =
             await getAdminDashboardOverview();
 

@@ -3,6 +3,7 @@ import { apiResponse } from "@/lib/api-response";
 import { getAppSettings, updateAppSettings } from "@/services/settings.service";
 
 import { updateSettingsSchema } from "@/schemas/settings.schema";
+import { getSession } from "@/lib/auth";
 
 export async function GET() {
    try {
@@ -26,6 +27,15 @@ export async function PUT(
    request: Request
 ) {
    try {
+      const session = await getSession();
+
+      if (!session || session.role !== "admin") {
+         return apiResponse({
+            message: "Unauthorized",
+            status: 401,
+         });
+      }
+
       const body =
          await request.json();
 
