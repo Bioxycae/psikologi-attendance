@@ -1,15 +1,11 @@
 import { apiResponse } from "@/lib/api-response";
-
 import { createUser, getUsers } from "@/services/user.service";
-
-import {
-   createUserSchema,
-} from "@/schemas/user.schema";
+import { createUserSchema } from "@/schemas/user.schema";
 import { getSession } from "@/lib/auth";
 
-export async function GET(
-   request: Request
-) {
+export const dynamic = "force-dynamic";
+
+export async function GET(request: Request) {
    try {
       const session = await getSession();
 
@@ -20,36 +16,14 @@ export async function GET(
          });
       }
 
-      const {
-         searchParams,
-      } = new URL(
-         request.url
-      );
+      const { searchParams } = new URL(request.url);
 
-      const limit =
-         Number(
-            searchParams.get(
-               "limit"
-            ) || 6
-         );
+      const limit = Number(searchParams.get("limit") || 6);
+      const offset = Number(searchParams.get("offset") || 0);
 
-      const offset =
-         Number(
-            searchParams.get(
-               "offset"
-            ) || 0
-         );
+      const { data, count } = await getUsers(limit, offset);
 
-      const {
-         data,
-         count,
-      } = await getUsers(
-         limit,
-         offset
-      );
-
-      const hasMore =
-         offset + limit < count;
+      const hasMore = offset + limit < count;
 
       return apiResponse({
          data,
@@ -57,17 +31,13 @@ export async function GET(
       });
    } catch {
       return apiResponse({
-         message:
-            "Gagal mengambil data user",
-
+         message: "Gagal mengambil data user",
          status: 500,
       });
    }
 }
 
-export async function POST(
-   request: Request
-) {
+export async function POST(request: Request) {
    try {
       const session = await getSession();
 
@@ -78,76 +48,34 @@ export async function POST(
          });
       }
 
-      const formData =
-         await request.formData();
+      const formData = await request.formData();
+      const image = formData.get("image") as File | null;
 
-      const image =
-         formData.get(
-            "image"
-         ) as File | null;
+      const validatedFields = createUserSchema.safeParse({
+         name: formData.get("name"),
+         email: formData.get("email"),
+         password: formData.get("password"),
+         role: formData.get("role"),
+         image,
+      });
 
-      const validatedFields =
-         createUserSchema.safeParse({
-            name:
-               formData.get(
-                  "name"
-               ),
-
-            email:
-               formData.get(
-                  "email"
-               ),
-
-            password:
-               formData.get(
-                  "password"
-               ),
-
-            role:
-               formData.get(
-                  "role"
-               ),
-
-            image,
-         });
-
-      if (
-         !validatedFields.success
-      ) {
+      if (!validatedFields.success) {
          return apiResponse({
-            message:
-               validatedFields
-                  .error
-                  .issues[0]
-                  ?.message ||
-               "Data tidak valid",
-
+            message: validatedFields.error.issues[0]?.message || "Data tidak valid",
             status: 400,
          });
       }
 
-      const user =
-         await createUser(
-            validatedFields.data
-         );
+      const user = await createUser(validatedFields.data);
 
       return apiResponse({
-         message:
-            "User berhasil dibuat",
-
+         message: "User berhasil dibuat",
          data: user,
       });
-   } catch (
-      error
-   ) {
-      console.error(
-         error
-      );
-
+   } catch (error) {
+      console.error(error);
       return apiResponse({
-         message:
-            "Gagal membuat user",
-
+         message: "Gagal membuat user",
          status: 500,
       });
    }

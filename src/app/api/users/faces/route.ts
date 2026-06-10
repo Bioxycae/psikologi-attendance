@@ -1,33 +1,24 @@
 import { apiResponse } from "@/lib/api-response";
-
 import { createServerSupabase } from "@/lib/supabase/server";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
    try {
-      const supabase =
-         createServerSupabase();
+      const supabase = createServerSupabase();
 
-      const {
-         data,
-         error,
-      } = await supabase
+      const { data, error } = await supabase
          .from("users")
          .select(`
             id,
             name,
             image_url
          `)
-         .not(
-            "image_url",
-            "is",
-            null
-         );
+         .not("image_url", "is", null);
 
       if (error) {
          return apiResponse({
-            message:
-               error.message,
-
+            message: error.message,
             status: 500,
          });
       }
@@ -37,9 +28,7 @@ export async function GET() {
       });
    } catch {
       return apiResponse({
-         message:
-            "Gagal mengambil data wajah",
-
+         message: "Gagal mengambil data wajah",
          status: 500,
       });
    }

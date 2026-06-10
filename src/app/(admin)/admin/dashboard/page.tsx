@@ -93,7 +93,7 @@ const AdminDashboardPage = () => {
    useEffect(() => {
       const loadDashboard = async () => {
          try {
-            const response = await fetch("/api/admin/dashboard");
+            const response = await fetch("/api/admin/dashboard", { cache: "no-store" });
             const contentType = response.headers.get("content-type");
             if (!contentType || !contentType.includes("application/json")) {
                toast.error("Failed to load admin dashboard");
@@ -140,7 +140,6 @@ const AdminDashboardPage = () => {
 
          const isCompleted = session.checkout_verified && session.checkpoint_verified;
          const isMissed = session.checkout_verified && !session.checkpoint_verified;
-         const isInProgress = !session.checkout_verified;
 
          const sessionStatusValue = isCompleted
             ? "completed"
@@ -228,7 +227,7 @@ const AdminDashboardPage = () => {
                                  onClick={() => {
                                     setSelectedFilter(option.value);
                                     setIsFilterOpen(false);
-                                 }}
+                                  }}
                                  className={
                                     selectedFilter === option.value
                                        ? "flex h-10 w-full cursor-pointer items-center rounded-md bg-(--pertama) px-3 text-left text-sm font-semibold text-(--kedua)"

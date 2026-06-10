@@ -1,60 +1,30 @@
 import { apiResponse } from "@/lib/api-response";
-
 import { createServerSupabase } from "@/lib/supabase/server";
 
-export async function GET(
-   request: Request
-) {
+export const dynamic = "force-dynamic";
+
+export async function GET(request: Request) {
    try {
-      const { searchParams } =
-         new URL(request.url);
+      const { searchParams } = new URL(request.url);
 
-      const startDate =
-         searchParams.get(
-            "startDate"
-         );
+      const startDate = searchParams.get("startDate");
+      const endDate = searchParams.get("endDate");
 
-      const endDate =
-         searchParams.get(
-            "endDate"
-         );
+      const supabase = createServerSupabase();
 
-      const supabase =
-         createServerSupabase();
+      let query = supabase.from("attendance").select("*");
 
-      let query = supabase
-         .from("attendance")
-         .select("*");
-
-      if (
-         startDate &&
-         endDate
-      ) {
-         query = query
-            .gte(
-               "attendance_time",
-               startDate
-            )
-            .lte(
-               "attendance_time",
-               endDate
-            );
+      if (startDate && endDate) {
+         query = query.gte("attendance_time", startDate).lte("attendance_time", endDate);
       }
 
-      const { data, error } =
-         await query.order(
-            "attendance_time",
-            {
-               ascending:
-                  false,
-            }
-         );
+      const { data, error } = await query.order("attendance_time", {
+         ascending: false,
+      });
 
       if (error) {
          return apiResponse({
-            message:
-               "Gagal mengambil data attendance",
-
+            message: "Gagal mengambil data attendance",
             status: 500,
          });
       }
@@ -74,85 +44,49 @@ export async function GET(
          "Status",
       ].join(",");
 
-      const csvRows = (
-         data || []
-      ).map(
-         (
-            record,
-            index
-         ) => {
-            const formatDate = (
-               date: string | null
-            ) => {
-               if (!date) {
-                  return "-";
-               }
+      const csvRows = (data || []).map((record, index) => {
+         const formatDate = (date: string | null) => {
+            if (!date) {
+               return "-";
+            }
 
-               const d =
-                  new Date(date);
+            const d = new Date(date);
 
-               return d.toLocaleString(
-                  "id-ID",
-                  {
-                     timeZone:
-                        "Asia/Jakarta",
-                  }
-               );
-            };
+            return d.toLocaleString("id-ID", {
+               timeZone: "Asia/Jakarta",
+            });
+         };
 
-            return [
-               index + 1,
-               `"${record.user_name || ""}"`,
-               formatDate(
-                  record.attendance_time
-               ),
-               formatDate(
-                  record.checkout_time
-               ),
-               record.checkpoint_verified
-                  ? "Ya"
-                  : "Tidak",
-               record.checkout_verified
-                  ? "Ya"
-                  : "Tidak",
-               record.face_verified
-                  ? "Ya"
-                  : "Tidak",
-               record.liveness_verified
-                  ? "Ya"
-                  : "Tidak",
-               record.latitude || "-",
-               record.longitude || "-",
-               `"${record.location_name || ""}"`,
-               record.status || "-",
-            ].join(",");
-         }
-      );
+         return [
+            index + 1,
+            `"${record.user_name || ""}"`,
+            formatDate(record.attendance_time),
+            formatDate(record.checkout_time),
+            record.checkpoint_verified ? "Ya" : "Tidak",
+            record.checkout_verified ? "Ya" : "Tidak",
+            record.face_verified ? "Ya" : "Tidak",
+            record.liveness_verified ? "Ya" : "Tidak",
+            record.latitude || "-",
+            record.longitude || "-",
+            `"${record.location_name || ""}"`,
+            record.status || "-",
+         ].join(",");
+      });
 
-      const csvContent = [
-         csvHeader,
-         ...csvRows,
-      ].join("\n");
+      const csvContent = [csvHeader, ...csvRows].join("\n");
 
-      return new Response(
-         csvContent,
-         {
-            headers: {
-               "Content-Type":
-                  "text/csv;charset=utf-8",
-
-               "Content-Disposition":
-                  `attachment; filename="attendance_${Date.now()}.csv"`,
-            },
-         }
-      );
+      return new Response(csvContent, {
+         headers: {
+            "Content-Type": "text/csv;charset=utf-8",
+            "Content-Disposition": `attachment; filename="attendance_${Date.now()}.csv"`,
+            "Cache-Control": "no-store, max-age=0, must-revalidate",
+         },
+      });
    } catch (error) {
       console.error(error);
 
       return apiResponse({
-         message:
-            "Gagal export attendance",
-
+         message: "Gagal export attendance",
          status: 500,
       });
    }

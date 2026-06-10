@@ -1,13 +1,10 @@
 "use client";
 
-/* eslint-disable react-hooks/set-state-in-effect, @typescript-eslint/no-explicit-any */
 import {
    useEffect,
    useState,
 } from "react";
-
 import { useRouter } from "next/navigation";
-
 import { toast } from "sonner";
 
 type AttendancePayload = {
@@ -54,7 +51,8 @@ export const useAttendance =
             try {
                const response =
                   await fetch(
-                     `/api/attendance/today?user_id=${userId}`
+                     `/api/attendance/today?user_id=${userId}`,
+                     { cache: "no-store" }
                   );
 
                const result =
@@ -84,7 +82,8 @@ export const useAttendance =
             try {
                const response =
                   await fetch(
-                     "/api/settings"
+                     "/api/settings",
+                     { cache: "no-store" }
                   );
 
                const result =
@@ -117,7 +116,8 @@ export const useAttendance =
                try {
                   const userResponse =
                      await fetch(
-                        "/api/users/me"
+                        "/api/users/me",
+                        { cache: "no-store" }
                      );
 
                   const userResult =
@@ -267,7 +267,8 @@ export const useAttendance =
 
                const usersResponse =
                   await fetch(
-                     "/api/users/faces"
+                     "/api/users/faces",
+                     { cache: "no-store" }
                   );
 
                const usersResult =

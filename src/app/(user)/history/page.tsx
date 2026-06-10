@@ -103,7 +103,8 @@ const HistoryPage =
          ) => {
             const response =
                await fetch(
-                  `/api/attendance/history?user_id=${userId}&limit=${LIMIT}&offset=${offset}`
+                  `/api/attendance/history?user_id=${userId}&limit=${LIMIT}&offset=${offset}`,
+                  { cache: "no-store" }
                );
 
             const contentType = response.headers.get("content-type");
@@ -141,7 +142,8 @@ const HistoryPage =
                try {
                   const userResponse =
                      await fetch(
-                        "/api/users/me"
+                        "/api/users/me",
+                        { cache: "no-store" }
                      );
 
                   const contentType = userResponse.headers.get("content-type");
@@ -306,7 +308,7 @@ const HistoryPage =
                         59,
                         59,
                         999
-                     );
+                      );
 
                      return (
                         attendanceDate >=
@@ -544,7 +546,7 @@ const HistoryPage =
                         type="button"
                         onClick={handleExport}
                         className="flex h-14 cursor-pointer items-center justify-center gap-3 rounded-md bg-(--pertama) px-5 text-base font-semibold text-(--kedua) lg:h-26 lg:min-w-23 lg:flex-col"
-                     >
+                      >
                         <Download size={22} />
                         Export
                      </button>

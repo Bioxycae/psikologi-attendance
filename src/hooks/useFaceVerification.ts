@@ -3,7 +3,6 @@
 import {
    useState,
 } from "react";
-
 import * as faceapi from "face-api.js";
 import { toast } from "sonner";
 
@@ -111,11 +110,13 @@ export const useFaceVerification = (
                sessionResponse,
             ] = await Promise.all([
                fetch(
-                  "/api/users/faces"
+                  "/api/users/faces",
+                  { cache: "no-store" }
                ),
 
                fetch(
-                  "/api/users/me"
+                  "/api/users/me",
+                  { cache: "no-store" }
                ),
             ]);
 

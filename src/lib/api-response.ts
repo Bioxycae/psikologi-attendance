@@ -1,11 +1,9 @@
 import type { ApiResponse } from "@/types/api.type";
 import { NextResponse } from "next/server";
 
-
-type ApiResponseProps<T> =
-   ApiResponse<T> & {
-      status?: number;
-   };
+type ApiResponseProps<T> = ApiResponse<T> & {
+   status?: number;
+};
 
 export const apiResponse = <T>({
    data,
@@ -15,16 +13,16 @@ export const apiResponse = <T>({
 }: ApiResponseProps<T>) => {
    return NextResponse.json(
       {
-         success:
-            status >= 200 &&
-            status < 300,
-
+         success: status >= 200 && status < 300,
          message,
          data,
          hasMore,
       },
       {
          status,
+         headers: {
+            "Cache-Control": "no-store, max-age=0, must-revalidate",
+         },
       }
    );
 };

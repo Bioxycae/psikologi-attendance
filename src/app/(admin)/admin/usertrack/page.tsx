@@ -44,7 +44,7 @@ const UserTrackPage = () => {
 
    const loadSessions = async () => {
       try {
-         const response = await fetch("/api/admin/sessions");
+         const response = await fetch("/api/admin/sessions", { cache: "no-store" });
          const contentType = response.headers.get("content-type");
          if (!contentType || !contentType.includes("application/json")) {
             toast.error("Gagal memuat sesi aktif");
@@ -236,7 +236,7 @@ const UserTrackPage = () => {
                                     <span className="text-xs text-(--keenam) leading-none">Device / OS</span>
                                     <span className="text-sm font-medium text-(--pertama)">
                                        {osName} ({browserName})
-                                    </span>
+                                     </span>
                                  </div>
                               </div>
 

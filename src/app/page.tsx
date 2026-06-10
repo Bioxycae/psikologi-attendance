@@ -14,7 +14,7 @@ type DashboardUser = {
 type UserResponse = {
    success: boolean;
    data?: DashboardUser;
-};
+ };
 
 const Home = () => {
    const router = useRouter();
@@ -22,7 +22,7 @@ const Home = () => {
    useEffect(() => {
       const checkSession = async () => {
          try {
-            const response = await fetch("/api/users/me");
+            const response = await fetch("/api/users/me", { cache: "no-store" });
             const contentType = response.headers.get("content-type");
             if (!contentType || !contentType.includes("application/json")) {
                router.replace("/login");

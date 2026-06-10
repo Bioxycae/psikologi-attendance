@@ -38,7 +38,7 @@ export const MobileHeader = ({
       await fetch("/api/logout", {
          method: "POST",
       });
-
+      router.refresh();
       router.replace("/login");
    };
 

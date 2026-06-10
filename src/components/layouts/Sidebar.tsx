@@ -26,9 +26,10 @@ export const Sidebar = ({
       await fetch("/api/logout", {
          method: "POST",
       });
-
+      router.refresh();
       router.replace("/login");
    };
+
    return (
       <>
          <aside className="hidden w-80 border-r border-(--pertama) bg-(--kedua) px-7 py-10 lg:flex lg:flex-col">

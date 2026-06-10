@@ -81,7 +81,8 @@ const DashboardPage = () => {
       ) => {
          const response =
             await fetch(
-               `/api/attendance/history?user_id=${userId}&limit=${LIMIT}&offset=${offset}`
+               `/api/attendance/history?user_id=${userId}&limit=${LIMIT}&offset=${offset}`,
+               { cache: "no-store" }
             );
 
          const contentType = response.headers.get("content-type");
@@ -119,7 +120,8 @@ const DashboardPage = () => {
             try {
                const userResponse =
                   await fetch(
-                     "/api/users/me"
+                     "/api/users/me",
+                     { cache: "no-store" }
                   );
 
                const contentType = userResponse.headers.get("content-type");
@@ -286,23 +288,23 @@ const DashboardPage = () => {
                   </p>
                </div>
 
-                {attendanceMode === "completed" ? (
-                   <button
-                      disabled
-                      className="hidden h-26 min-w-48 cursor-not-allowed flex-col items-center justify-center gap-3 rounded-md bg-slate-500 px-6 text-base font-semibold text-(--kedua) opacity-90 lg:flex"
-                   >
-                      <ScanFace size={28} />
-                      {getButtonText()}
-                   </button>
-                ) : (
-                   <Link
-                      href="/validate"
-                      className="hidden h-26 min-w-48 cursor-pointer flex-col items-center justify-center gap-3 rounded-md bg-(--pertama) px-6 text-base font-semibold text-(--kedua) lg:flex"
-                   >
-                      <ScanFace size={28} />
-                      {getButtonText()}
-                   </Link>
-                )}
+                 {attendanceMode === "completed" ? (
+                    <button
+                       disabled
+                       className="hidden h-26 min-w-48 cursor-not-allowed flex-col items-center justify-center gap-3 rounded-md bg-slate-500 px-6 text-base font-semibold text-(--kedua) opacity-90 lg:flex"
+                    >
+                       <ScanFace size={28} />
+                       {getButtonText()}
+                    </button>
+                 ) : (
+                    <Link
+                       href="/validate"
+                       className="hidden h-26 min-w-48 cursor-pointer flex-col items-center justify-center gap-3 rounded-md bg-(--pertama) px-6 text-base font-semibold text-(--kedua) lg:flex"
+                    >
+                       <ScanFace size={28} />
+                       {getButtonText()}
+                    </Link>
+                 )}
             </div>
          </div>
 
@@ -341,7 +343,7 @@ const DashboardPage = () => {
                               totalHours
                            )
                         }
-                      </h2>
+                     </h2>
                   </div>
 
                   <Clock3
