@@ -1,9 +1,6 @@
 import { UserRole } from "@/types/auth.type";
 import { NextResponse } from "next/server";
-
-import type {
-   NextRequest,
-} from "next/server";
+import type { NextRequest } from "next/server";
 
 type RoleMiddlewareProps = {
    request: NextRequest;
@@ -14,44 +11,26 @@ export const roleMiddleware = ({
    request,
    role,
 }: RoleMiddlewareProps) => {
-   const pathname =
-      request.nextUrl.pathname;
+   const pathname = request.nextUrl.pathname;
 
-   const isAdminRoute =
-      pathname.startsWith("/admin");
-
+   const isAdminRoute = pathname.startsWith("/admin");
    const isUserRoute =
-      pathname.startsWith(
-         "/dashboard"
-      ) ||
-      pathname.startsWith(
-         "/history"
-      ) ||
-      pathname.startsWith(
-         "/validate"
-      );
+      pathname.startsWith("/dashboard") ||
+      pathname.startsWith("/history") ||
+      pathname.startsWith("/validate");
 
-   if (
-      role === "admin" &&
-      isUserRoute
-   ) {
+   const proto = request.headers.get("x-forwarded-proto") || "http";
+   const host = request.headers.get("x-forwarded-host") || request.headers.get("host") || "localhost";
+
+   if (role === "admin" && isUserRoute) {
       return NextResponse.redirect(
-         new URL(
-            "/admin/dashboard",
-            request.url
-         )
+         new URL("/admin/dashboard", `${proto}://${host}`)
       );
    }
 
-   if (
-      role === "user" &&
-      isAdminRoute
-   ) {
+   if (role === "user" && isAdminRoute) {
       return NextResponse.redirect(
-         new URL(
-            "/dashboard",
-            request.url
-         )
+         new URL("/dashboard", `${proto}://${host}`)
       );
    }
 
