@@ -256,7 +256,7 @@ const DashboardPage = () => {
 
    if (isLoading) {
       return (
-         <div className="flex min-h-[400px] flex-1 flex-col items-center justify-center rounded-xl border border-(--pertama) bg-(--kesembilan) p-12">
+         <div className="flex min-h-100 flex-1 flex-col items-center justify-center rounded-xl border border-(--pertama) bg-(--kesembilan) p-12">
             <div className="flex flex-col items-center gap-4">
                <div className="relative flex items-center justify-center">
                   <div className="h-16 w-16 animate-spin rounded-full border-4 border-(--ketiga) border-t-(--pertama)"></div>
@@ -309,7 +309,7 @@ const DashboardPage = () => {
          </div>
 
          <div className="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 lg:grid lg:grid-cols-3 lg:gap-3 lg:overflow-visible">
-            <div className="min-h-34 min-w-[300px] shrink-0 snap-center rounded-xl border border-(--pertama) bg-(--kesembilan) p-6 lg:min-w-0 lg:w-auto lg:p-8">
+            <div className="min-h-34 min-w-75 shrink-0 snap-center rounded-xl border border-(--pertama) bg-(--kesembilan) p-6 lg:min-w-0 lg:w-auto lg:p-8">
                <div className="flex items-start justify-between gap-4">
                   <div>
                      <p className="text-base font-medium text-(--keenam)">
@@ -330,7 +330,7 @@ const DashboardPage = () => {
                </div>
             </div>
 
-            <div className="min-h-34 min-w-[300px] shrink-0 snap-center rounded-xl border border-(--pertama) bg-(--kesembilan) p-6 lg:min-w-0 lg:w-auto lg:p-8">
+            <div className="min-h-34 min-w-75 shrink-0 snap-center rounded-xl border border-(--pertama) bg-(--kesembilan) p-6 lg:min-w-0 lg:w-auto lg:p-8">
                <div className="flex items-start justify-between gap-4">
                   <div>
                      <p className="text-base font-medium text-(--keenam)">
@@ -353,7 +353,7 @@ const DashboardPage = () => {
                </div>
             </div>
 
-            <div className="min-h-34 min-w-[300px] shrink-0 snap-center rounded-xl border border-(--pertama) bg-(--kesembilan) p-6 lg:min-w-0 lg:w-auto lg:p-8">
+            <div className="min-h-34 min-w-75 shrink-0 snap-center rounded-xl border border-(--pertama) bg-(--kesembilan) p-6 lg:min-w-0 lg:w-auto lg:p-8">
                <div className="flex items-start justify-between gap-4">
                   <div>
                      <p className="text-base font-medium text-(--keenam)">

@@ -509,7 +509,7 @@ const HistoryPage =
 
       if (isLoading) {
          return (
-            <div className="flex min-h-[400px] flex-1 flex-col items-center justify-center rounded-xl border border-(--pertama) bg-(--kesembilan) p-12">
+            <div className="flex min-h-100 flex-1 flex-col items-center justify-center rounded-xl border border-(--pertama) bg-(--kesembilan) p-12">
                <div className="flex flex-col items-center gap-4">
                   <div className="relative flex items-center justify-center">
                      <div className="h-16 w-16 animate-spin rounded-full border-4 border-(--ketiga) border-t-(--pertama)"></div>
@@ -619,7 +619,7 @@ const HistoryPage =
                                  session
                               }
                               variant="history"
-                              className="min-w-[300px] shrink-0 snap-center lg:w-auto lg:min-w-0"
+                              className="min-w-75 shrink-0 snap-center lg:w-auto lg:min-w-0"
                               onClick={() =>
                                  setSelectedSession(
                                     session
