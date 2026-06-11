@@ -6,12 +6,7 @@ import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { loginSchema, LoginSchema } from "@/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-    BrainCircuit,
-    Eye,
-    EyeOff,
-    Loader2,
-} from "lucide-react";
+import { BrainCircuit, Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -31,25 +26,18 @@ const LoginPage = () => {
       resolver: zodResolver(loginSchema),
    });
 
-   const handleLogin = async (
-      data: LoginSchema
-   ) => {
+   const handleLogin = async (data: LoginSchema) => {
       try {
          setIsSubmitting(true);
-         const response = await fetch(
-            "/api/login",
-            {
-               method: "POST",
-               headers: {
-                  "Content-Type":
-                     "application/json",
-               },
-               body: JSON.stringify(data),
-            }
-         );
+         const response = await fetch("/api/login", {
+            method: "POST",
+            headers: {
+               "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+         });
 
-         const result =
-            await response.json();
+         const result = await response.json();
 
          if (!response.ok) {
             toast.error(result.message, {
@@ -71,12 +59,9 @@ const LoginPage = () => {
 
          router.replace("/dashboard");
       } catch {
-         toast.error(
-            "Terjadi kesalahan server",
-            {
-               id: "server-error",
-            }
-         );
+         toast.error("Terjadi kesalahan server", {
+            id: "server-error",
+         });
          setIsSubmitting(false);
       }
    };
@@ -87,22 +72,15 @@ const LoginPage = () => {
             <Card className="max-w-142 rounded-xl p-6 lg:p-6">
                <div className="flex flex-col items-center">
                   <div className="mb-8 flex items-center gap-3 pt-3">
-                     <BrainCircuit
-                        size={24}
-                        className="text-purple-300"
-                     />
+                     <BrainCircuit size={24} className="text-purple-300" />
 
                      <h1 className="text-xl font-semibold tracking-wide text-(--pertama)">
-                        PsychoLabskuy
+                        PsychoLabskuydsad
                      </h1>
                   </div>
 
-                  <form
-                     onSubmit={handleSubmit(handleLogin)}
-                     className="w-full"
-                  >
+                  <form onSubmit={handleSubmit(handleLogin)} className="w-full">
                      <div className="flex flex-col gap-3">
-
                         <div className="flex flex-col gap-1">
                            <label className="text-xl font-semibold tracking-wide text-(--pertama)">
                               Email
@@ -128,11 +106,7 @@ const LoginPage = () => {
 
                            <div className="relative">
                               <Input
-                                 type={
-                                    isPasswordVisible
-                                       ? "text"
-                                       : "password"
-                                 }
+                                 type={isPasswordVisible ? "text" : "password"}
                                  placeholder="**********"
                                  className="h-9 pr-12"
                                  {...register("password")}
@@ -146,9 +120,7 @@ const LoginPage = () => {
                               <button
                                  type="button"
                                  onClick={() =>
-                                    setIsPasswordVisible(
-                                       !isPasswordVisible
-                                    )
+                                    setIsPasswordVisible(!isPasswordVisible)
                                  }
                                  className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer"
                               >
