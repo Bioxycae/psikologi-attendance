@@ -84,7 +84,7 @@ const LoginPage = () => {
    return (
       <div className="flex min-h-screen flex-col bg-(--kedua)">
          <main className="flex flex-1 flex-col items-center justify-center px-6">
-            <Card className="max-w-[568px] rounded-xl p-6 lg:p-6">
+            <Card className="max-w-142 rounded-xl p-6 lg:p-6">
                <div className="flex flex-col items-center">
                   <div className="mb-8 flex items-center gap-3 pt-3">
                      <BrainCircuit
@@ -93,7 +93,7 @@ const LoginPage = () => {
                      />
 
                      <h1 className="text-xl font-semibold tracking-wide text-(--pertama)">
-                        PsychoLab
+                        PsychoLabskuy
                      </h1>
                   </div>
 
