@@ -166,7 +166,7 @@ const LoginPage = () => {
                   rel="noopener noreferrer"
                   className="cursor-pointer text-(--kedelapan) underline"
                >
-                  Contact Lab Administrator
+                  Contact Lab Administratorororor
                </Link>
             </div>
          </main>
