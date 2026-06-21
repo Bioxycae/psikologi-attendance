@@ -31,7 +31,7 @@ export default function RootLayout({
          <body className="min-h-screen bg-(--background) text-(--pertama)" suppressHydrationWarning>
             <FaceModelPreloader />
             {children}
-            <Toaster position="top-center" richColors />
+            <Toaster position="bottom-left" closeButton richColors className="toaster-responsive" />
          </body>
       </html>
    );

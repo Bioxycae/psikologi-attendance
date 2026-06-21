@@ -11,7 +11,7 @@ export const Card = ({
    return (
       <div
          className={cn(
-            "w-full rounded-xl border border-(--pertama) bg-(--kedua) p-10",
+            "w-full rounded-lg border border-(--pertama) bg-(--kedua) p-10",
             className
          )}
          {...props}

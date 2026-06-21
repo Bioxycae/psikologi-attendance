@@ -11,7 +11,7 @@ export const Button = ({
    return (
       <button
          className={cn(
-            "h-12 rounded-md bg-(--pertama) px-4 text-(--kedua) transition-all hover:opacity-90 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50",
+            "h-12 rounded-md bg-(--pertama) px-4 text-(--kedua) transition-colors duration-300 hover:bg-(--ketiga) cursor-pointer disabled:cursor-not-allowed disabled:opacity-50",
             className
          )}
          {...props}

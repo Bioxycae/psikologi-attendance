@@ -60,27 +60,23 @@ export const useLocationVerification =
                         longitude,
                       });
 
-                     const geoResponse =
-                        await fetch(
-                           `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-                        );
-
-                     const geoResult =
-                        await geoResponse.json();
-
-                     const city =
-                        geoResult.address.city ||
-                        geoResult.address.county ||
-                        geoResult.address.state ||
-                        "Unknown";
-
-                     const country =
-                        geoResult.address.country ||
-                        "Unknown";
-
-                     setLocationName(
-                        `${city}, ${country}`
-                     );
+                     // Fetch reverse geocoding asynchronously so it doesn't block validation
+                     fetch(
+                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+                     )
+                        .then((res) => res.json())
+                        .then((geoResult) => {
+                           const city =
+                              geoResult?.address?.city ||
+                              geoResult?.address?.county ||
+                              geoResult?.address?.state ||
+                              "Unknown";
+                           const country =
+                              geoResult?.address?.country ||
+                              "Unknown";
+                           setLocationName(`${city}, ${country}`);
+                        })
+                        .catch(() => setLocationName("Unknown Location"));
 
                      const response =
                         await fetch(
@@ -136,14 +132,18 @@ export const useLocationVerification =
                   }
                },
 
-               () => {
-                  setIsLoading(
-                     false
-                  );
-
-                  toast.error(
-                     "Failed to get location"
-                  );
+               (error) => {
+                  setIsLoading(false);
+                  if (error.code === error.TIMEOUT) {
+                     toast.error("Location request timed out. Please try again.");
+                  } else {
+                     toast.error("Failed to get location: " + error.message);
+                  }
+               },
+               {
+                  enableHighAccuracy: false,
+                  timeout: 10000,
+                  maximumAge: 0
                }
             );
          };

@@ -272,7 +272,7 @@ const DashboardPage = () => {
 
    return (
       <div className="flex flex-col gap-12 lg:gap-16">
-         <div className="rounded-xl border border-(--pertama) px-4 py-6 lg:px-8 bg-(--kesembilan)">
+         <div className="rounded-lg border border-(--pertama) px-4 py-6 lg:px-8 bg-(--kesembilan)">
             <div className="flex items-center justify-between gap-6">
                <div>
                   <h1 className="text-2xl font-semibold text-(--pertama) lg:text-3xl lg:text-(--pertama)">
@@ -289,18 +289,18 @@ const DashboardPage = () => {
                </div>
 
                  {attendanceMode === "completed" ? (
-                    <button
-                       disabled
-                       className="hidden h-26 min-w-48 cursor-not-allowed flex-col items-center justify-center gap-3 rounded-md bg-slate-500 px-6 text-base font-semibold text-(--kedua) opacity-90 lg:flex"
-                    >
+                     <button
+                        disabled
+                        className="hidden h-26 w-full max-w-sm cursor-not-allowed flex-col items-center justify-center gap-3 rounded-lg bg-slate-500 px-6 text-base font-semibold text-(--kedua) opacity-90 lg:flex"
+                     >
                        <ScanFace size={28} />
                        {getButtonText()}
                     </button>
                  ) : (
-                    <Link
-                       href="/validate"
-                       className="hidden h-26 min-w-48 cursor-pointer flex-col items-center justify-center gap-3 rounded-md bg-(--pertama) px-6 text-base font-semibold text-(--kedua) lg:flex"
-                    >
+                     <Link
+                        href="/validate"
+                        className="hidden h-26 w-full max-w-sm cursor-pointer flex-col items-center justify-center gap-3 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors duration-300 px-6 text-base font-semibold text-white shadow-md lg:flex"
+                     >
                        <ScanFace size={28} />
                        {getButtonText()}
                     </Link>
@@ -309,7 +309,7 @@ const DashboardPage = () => {
          </div>
 
          <div className="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 lg:grid lg:grid-cols-3 lg:gap-3 lg:overflow-visible">
-            <div className="min-h-34 min-w-75 shrink-0 snap-center rounded-xl border border-(--pertama) bg-(--kesembilan) p-6 lg:min-w-0 lg:w-auto lg:p-8">
+            <div className="min-h-34 min-w-75 shrink-0 snap-center rounded-lg border border-(--pertama) bg-(--kesembilan) p-6 lg:min-w-0 lg:w-auto lg:p-8">
                <div className="flex items-start justify-between gap-4">
                   <div>
                      <p className="text-base font-medium text-(--keenam)">
@@ -330,7 +330,7 @@ const DashboardPage = () => {
                </div>
             </div>
 
-            <div className="min-h-34 min-w-75 shrink-0 snap-center rounded-xl border border-(--pertama) bg-(--kesembilan) p-6 lg:min-w-0 lg:w-auto lg:p-8">
+            <div className="min-h-34 min-w-75 shrink-0 snap-center rounded-lg border border-(--pertama) bg-(--kesembilan) p-6 lg:min-w-0 lg:w-auto lg:p-8">
                <div className="flex items-start justify-between gap-4">
                   <div>
                      <p className="text-base font-medium text-(--keenam)">
@@ -353,7 +353,7 @@ const DashboardPage = () => {
                </div>
             </div>
 
-            <div className="min-h-34 min-w-75 shrink-0 snap-center rounded-xl border border-(--pertama) bg-(--kesembilan) p-6 lg:min-w-0 lg:w-auto lg:p-8">
+            <div className="min-h-34 min-w-75 shrink-0 snap-center rounded-lg border border-(--pertama) bg-(--kesembilan) p-6 lg:min-w-0 lg:w-auto lg:p-8">
                <div className="flex items-start justify-between gap-4">
                   <div>
                      <p className="text-base font-medium text-(--keenam)">
@@ -383,7 +383,7 @@ const DashboardPage = () => {
             <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-3 2xl:grid-cols-4">
                {attendanceData.length ===
                   0 ? (
-                  <div className="w-full rounded-md border border-(--pertama) p-6 lg:col-span-4 bg-(--kesembilan)">
+                  <div className="w-full rounded-lg border border-(--pertama) p-6 lg:col-span-4 bg-(--kesembilan)">
                      <p className="text-sm text-(--keenam)">
                         No attendance history available.
                      </p>
@@ -417,7 +417,7 @@ const DashboardPage = () => {
                   onClick={
                      handleLoadMore
                   }
-                  className="cursor-pointer rounded-md bg-(--pertama) px-6 py-3 text-sm font-semibold text-(--kedua)"
+                  className="cursor-pointer rounded-lg bg-(--pertama) px-6 py-3 text-sm font-semibold text-(--kedua)"
                >
                   Load More
                </button>
@@ -425,18 +425,18 @@ const DashboardPage = () => {
          )}
 
          {attendanceMode === "completed" ? (
-            <button
-               disabled
-               className="fixed bottom-20 left-1/2 z-40 flex h-12 -translate-x-1/2 cursor-not-allowed items-center gap-2 rounded-md bg-slate-500 px-4 text-sm font-semibold text-(--kedua) shadow-lg whitespace-nowrap opacity-90 lg:hidden"
-            >
+             <button
+                disabled
+                className="fixed bottom-20 left-1/2 z-40 flex h-12 w-11/12 -translate-x-1/2 cursor-not-allowed items-center justify-center gap-2 rounded-lg bg-slate-500 px-4 text-sm font-semibold text-(--kedua) shadow-lg whitespace-nowrap opacity-90 lg:hidden"
+             >
                {getButtonText()}
                <ScanFace size={20} />
             </button>
          ) : (
-            <Link
-               href="/validate"
-               className="fixed bottom-20 left-1/2 z-40 flex h-12 -translate-x-1/2 cursor-pointer items-center gap-2 rounded-md bg-(--pertama) px-4 text-sm font-semibold text-(--kedua) shadow-lg whitespace-nowrap lg:hidden"
-            >
+             <Link
+                href="/validate"
+                className="fixed bottom-20 left-1/2 z-40 flex h-12 w-11/12 -translate-x-1/2 cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors duration-300 px-4 text-sm font-semibold text-white shadow-lg whitespace-nowrap lg:hidden"
+             >
                {getButtonText()}
                <ScanFace size={20} />
             </Link>
