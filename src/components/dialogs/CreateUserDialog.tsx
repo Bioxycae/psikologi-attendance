@@ -75,7 +75,7 @@ export const CreateUserDialog = ({
          onSuccess();
       } catch (error) {
          console.error(error);
-         toast.error("Gagal membuat user");
+         toast.error("Failed to create user");
       }
    };
 
@@ -98,7 +98,7 @@ export const CreateUserDialog = ({
                      </Dialog.Title>
 
                      <Dialog.Description className="mt-1 text-sm text-(--keenam)">
-                        Tambahkan user baru
+                        Add a new user
                      </Dialog.Description>
                   </div>
 

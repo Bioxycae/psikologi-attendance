@@ -100,7 +100,7 @@ export const useCamera =
                );
 
                toast.error(
-                  "Gagal mendapatkan daftar kamera"
+                  "Failed to retrieve camera list"
                );
             }
          };
@@ -162,7 +162,7 @@ export const useCamera =
                );
 
                toast.error(
-                  "Gagal membuka kamera"
+                  "Failed to open camera"
                );
             } finally {
                setIsCameraLoading(

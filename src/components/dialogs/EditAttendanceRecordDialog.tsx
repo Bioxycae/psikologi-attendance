@@ -149,7 +149,7 @@ export const EditAttendanceRecordDialog = ({
          onSuccess();
       } catch (error) {
          console.error(error);
-         toast.error("Terjadi kesalahan saat menyimpan data");
+         toast.error("An error occurred while saving data");
       }
    };
 

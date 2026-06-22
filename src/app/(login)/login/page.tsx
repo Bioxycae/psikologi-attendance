@@ -47,7 +47,7 @@ const LoginPage = () => {
             return;
          }
 
-         toast.success("Login berhasil", {
+         toast.success("Login successful", {
             id: "login-success",
          });
 
@@ -59,7 +59,7 @@ const LoginPage = () => {
 
          router.replace("/dashboard");
       } catch {
-         toast.error("Terjadi kesalahan server", {
+         toast.error("A server error occurred", {
             id: "server-error",
          });
          setIsSubmitting(false);

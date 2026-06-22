@@ -266,7 +266,7 @@ export const useAttendance =
                   );
 
                   toast.error(
-                     "User tidak ditemukan"
+                     "User not found"
                   );
 
                   return;
@@ -305,7 +305,7 @@ export const useAttendance =
                   );
 
                   toast.error(
-                     "User tidak valid"
+                     "Invalid user"
                   );
 
                   return;
@@ -331,7 +331,7 @@ export const useAttendance =
                   );
 
                   toast.error(
-                     "Session hari ini sudah selesai"
+                     "Today's session is already completed"
                   );
 
                   return;
@@ -461,7 +461,7 @@ export const useAttendance =
                );
 
                toast.error(
-                  "Gagal memproses attendance"
+                  "Failed to process attendance"
                );
             } finally {
                setIsSubmittingAttendance(

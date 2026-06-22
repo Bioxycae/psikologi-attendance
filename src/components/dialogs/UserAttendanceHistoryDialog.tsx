@@ -47,7 +47,7 @@ export const UserAttendanceHistoryDialog = ({
          setOffset(currentOffset);
       } catch (error) {
          console.error(error);
-         toast.error("Gagal mengambil data history");
+         toast.error("Failed to fetch history data");
       } finally {
          setIsLoading(false);
       }
@@ -82,7 +82,7 @@ export const UserAttendanceHistoryDialog = ({
          fetchHistory(0, false); // Refetch from start
       } catch (error) {
          console.error(error);
-         toast.error("Gagal menghapus data absen");
+         toast.error("Failed to delete attendance record");
       }
    };
 
@@ -116,7 +116,7 @@ export const UserAttendanceHistoryDialog = ({
                      ) : history.length === 0 ? (
                         <div className="rounded-xl border border-(--pertama) p-8 text-center">
                            <History className="mx-auto h-12 w-12 text-(--keenam) mb-3" />
-                           <p className="text-sm text-(--keenam)">Belum ada history absen.</p>
+                           <p className="text-sm text-(--keenam)">No attendance history yet.</p>
                         </div>
                      ) : (
                         history.map((record) => {
@@ -138,19 +138,19 @@ export const UserAttendanceHistoryDialog = ({
                            return (
                               <div key={record.id} className="rounded-xl border border-(--pertama) bg-(--kesembilan) p-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                  <div className="flex flex-col gap-2">
-                                    <div className="flex items-center gap-2">
-                                       <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${statusColor}`}>
-                                          {statusLabel}
-                                       </span>
-                                       <span className="text-sm font-medium text-(--pertama)">
-                                          {date.toLocaleDateString("id-ID", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-                                       </span>
-                                    </div>
-                                    <div className="flex items-center gap-4 text-sm text-(--keenam)">
-                                       <div className="flex items-center gap-1">
-                                          <Clock size={16} />
-                                          {date.toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' })}
-                                       </div>
+                                     <div className="flex items-center gap-2">
+                                        <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${statusColor}`}>
+                                           {statusLabel}
+                                        </span>
+                                        <span className="text-sm font-medium text-(--pertama)">
+                                           {date.toLocaleDateString("en-US", { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                                        </span>
+                                     </div>
+                                     <div className="flex items-center gap-4 text-sm text-(--keenam)">
+                                        <div className="flex items-center gap-1">
+                                           <Clock size={16} />
+                                           {date.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' })}
+                                        </div>
                                        <div className="flex items-center gap-1">
                                           <MapPin size={16} />
                                           {(record as any).location_name || "Unknown Location"}
@@ -213,7 +213,7 @@ export const UserAttendanceHistoryDialog = ({
 
          <ConfirmDialog
             title="Delete Attendance Record"
-            description="Apakah lu yakin ingin menghapus data absen ini?"
+            description="Are you sure you want to delete this attendance record?"
             open={isDeleteRecordOpen}
             onOpenChange={setIsDeleteRecordOpen}
             onConfirm={handleDeleteRecord}

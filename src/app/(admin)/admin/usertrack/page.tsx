@@ -49,20 +49,20 @@ const UserTrackPage = () => {
          });
          const contentType = response.headers.get("content-type");
          if (!contentType || !contentType.includes("application/json")) {
-            toast.error("Gagal memuat sesi aktif");
+            toast.error("Failed to load active sessions");
             return;
          }
          const result = (await response.json()) as APIResponse;
 
          if (!result.success || !result.data) {
-            toast.error(result.message || "Gagal memuat sesi aktif");
+            toast.error(result.message || "Failed to load active sessions");
             return;
          }
 
          setSessions(result.data);
       } catch (error) {
          console.error(error);
-         toast.error("Gagal menghubungkan ke server");
+         toast.error("Failed to connect to server");
       } finally {
          setIsLoading(false);
       }
@@ -80,21 +80,21 @@ const UserTrackPage = () => {
          });
          const contentType = response.headers.get("content-type");
          if (!contentType || !contentType.includes("application/json")) {
-            toast.error("Gagal mengakhiri sesi");
+            toast.error("Failed to revoke session");
             return;
          }
          const result = (await response.json()) as APIResponse;
 
          if (!result.success) {
-            toast.error(result.message || "Gagal mengakhiri sesi");
+            toast.error(result.message || "Failed to revoke session");
             return;
          }
 
-         toast.success("Sesi berhasil diakhiri");
+         toast.success("Session successfully revoked");
          setSessions((prev) => prev.filter((session) => session.id !== id));
       } catch (error) {
          console.error(error);
-         toast.error("Terjadi kesalahan koneksi");
+         toast.error("Connection error occurred");
       } finally {
          setRevokingId(null);
       }
@@ -164,8 +164,8 @@ const UserTrackPage = () => {
                User Sessions Tracking
             </h1>
             <p className="mt-2 max-w-xl text-sm leading-6 text-(--pertama) lg:text-base">
-               Pantau dan kelola semua sesi aktif pengguna. Anda dapat
-               memutuskan sesi perangkat kapan saja secara instan.
+               Monitor and manage all active user sessions. You can
+               revoke device sessions instantly at any time.
             </p>
          </div>
 
@@ -184,7 +184,7 @@ const UserTrackPage = () => {
                      type="text"
                      value={search}
                      onChange={(event) => setSearch(event.target.value)}
-                     placeholder="Cari nama, email, atau IP Address..."
+                     placeholder="Search name, email, or IP Address..."
                      className="h-12 w-full rounded-md border border-(--pertama) bg-transparent pr-4 pl-11 text-sm outline-none"
                   />
                </div>
@@ -194,7 +194,7 @@ const UserTrackPage = () => {
                {filteredSessions.length === 0 ? (
                   <div className="rounded-md border border-(--pertama) bg-(--kesembilan) p-8 text-center">
                      <p className="text-sm text-(--keenam)">
-                        Tidak ada sesi aktif yang ditemukan.
+                        No active sessions found.
                      </p>
                   </div>
                ) : (
@@ -286,7 +286,7 @@ const UserTrackPage = () => {
                                  />
                                  <div className="flex flex-col">
                                     <span className="text-xs text-(--keenam) leading-none">
-                                       Login Sejak
+                                       Logged in since
                                     </span>
                                     <span className="text-sm font-medium text-(--pertama)">
                                        {formattedDate}

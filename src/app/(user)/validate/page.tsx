@@ -245,12 +245,12 @@ const ValidatePage = () => {
                      Smartphone Recommended
                   </h3>
                   <p className="mt-3 text-base font-medium text-amber-600 lg:text-lg">
-                     GPS accuracy is highly optimized on smartphones. Location detection via PC/Laptop may be inaccurate.
+                     For optimal GPS accuracy, please use a smartphone. PC or laptop locations may be inaccurate.
                   </p>
                </div>
 
-               <h2 className="text-center text-lg font-semibold leading-8 text-(--pertama) lg:text-2xl">
-                  Verify your location first via the <span className="font-bold">top menu</span>, then open the camera.
+               <h2 className="text-center text-lg font-semibold leading-8 text-(--pertama) lg:text-xl">
+                  Please verify your location using the <span className="font-bold">Location Check</span> button above before opening the camera.
                </h2>
             </div>
          ) : attendanceMode === "completed" ? (

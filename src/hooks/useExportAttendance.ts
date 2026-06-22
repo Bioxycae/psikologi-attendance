@@ -53,7 +53,7 @@ export const useExportAttendance =
                   !response.ok
                ) {
                   toast.error(
-                     "Gagal export data"
+                     "Failed to export data"
                   );
 
                   return;
@@ -92,7 +92,7 @@ export const useExportAttendance =
                );
 
                toast.success(
-                  "Data berhasil diexport"
+                  "Data successfully exported"
                );
             } catch (error) {
                console.error(error);

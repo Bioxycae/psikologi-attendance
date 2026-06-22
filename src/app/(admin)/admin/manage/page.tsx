@@ -293,7 +293,7 @@ const ManagePage = () => {
                      </div>
                   ))
                ) : (
-                  <p className="text-sm text-(--keenam)">Tidak ada admin yang ditemukan.</p>
+                  <p className="text-sm text-(--keenam)">No admins found.</p>
                )}
             </div>
          </div>
@@ -378,7 +378,7 @@ const ManagePage = () => {
                      </div>
                   ))
                ) : (
-                  <p className="text-sm text-(--keenam)">Tidak ada user biasa yang ditemukan.</p>
+                  <p className="text-sm text-(--keenam)">No regular users found.</p>
                )}
             </div>
          </div>
@@ -396,7 +396,7 @@ const ManagePage = () => {
 
          <ConfirmDialog
             title="Delete User"
-            description="Apakah lu yakin ingin menghapus user ini?"
+            description="Are you sure you want to delete this user?"
             open={isDeleteOpen}
             onOpenChange={setIsDeleteOpen}
             onConfirm={handleDeleteUser}

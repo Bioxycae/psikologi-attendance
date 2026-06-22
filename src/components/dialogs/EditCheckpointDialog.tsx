@@ -110,7 +110,7 @@ export const EditCheckpointDialog = ({
          onOpenChange(false);
       } catch (error) {
          console.error(error);
-         toast.error("Gagal memperbarui pengaturan");
+         toast.error("Failed to update settings");
       }
    };
 

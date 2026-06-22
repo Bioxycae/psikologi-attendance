@@ -169,7 +169,7 @@ export const useLivenessVerification = (
             !isFaceVerified
          ) {
             toast.error(
-               "Verify face terlebih dahulu"
+               "Verify your face first"
             );
 
             return;

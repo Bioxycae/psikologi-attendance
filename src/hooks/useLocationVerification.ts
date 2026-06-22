@@ -62,8 +62,8 @@ export const useLocationVerification =
 
             const requestLocation = (attempt: number) => {
                const options = attempt === 1 
-                  ? { enableHighAccuracy: true, timeout: 5000, maximumAge: Infinity }
-                  : { enableHighAccuracy: false, timeout: 5000, maximumAge: Infinity };
+                  ? { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                  : { enableHighAccuracy: false, timeout: 10000, maximumAge: Infinity };
 
                navigator.geolocation.getCurrentPosition(
                   async position => {
@@ -194,7 +194,7 @@ export const useLocationVerification =
                                  coordinates: { latitude: lat, longitude: lon },
                                  locationName: locName
                               }));
-                              toast.warning("Sinyal GPS lemah. Menggunakan lokasi IP.");
+                              toast.warning("GPS signal is weak or unavailable. Falling back to IP location, which may be inaccurate.");
                               toast.success(result.message);
                            }
                         };
@@ -220,13 +220,13 @@ export const useLocationVerification =
 
                      setIsLoading(false);
                      
-                     let errorMessage = "Gagal mendapatkan lokasi akurat.";
+                     let errorMessage = "Failed to retrieve accurate location.";
                      if (error.code === error.PERMISSION_DENIED) {
-                        errorMessage = "Akses lokasi ditolak. Izinkan browser untuk mengakses lokasi Anda.";
+                        errorMessage = "Location access denied. Please explicitly allow your browser to access your location settings.";
                      } else if (error.code === error.POSITION_UNAVAILABLE) {
-                        errorMessage = "Informasi lokasi tidak tersedia. Nyalakan Wi-Fi perangkat Anda untuk akurasi terbaik.";
+                        errorMessage = "Location information is unavailable. Please ensure your device's GPS and Wi-Fi are turned on for the best accuracy.";
                      } else if (error.code === error.TIMEOUT) {
-                        errorMessage = "Waktu habis. Pastikan 'Location Services' menyala di pengaturan OS laptop/HP Anda.";
+                        errorMessage = "Location request timed out. Please make sure 'Location Services' are enabled in your device's OS settings.";
                      }
 
                      toast.error(errorMessage);

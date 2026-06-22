@@ -90,14 +90,14 @@ export const EditUserDialog = ({
          toast.success(result.message);
          if (data.password) {
             navigator.clipboard.writeText(data.password);
-            toast.success("Password baru berhasil dicopy!");
+            toast.success("New password copied successfully!");
          }
          reset();
          onOpenChange(false);
          onSuccess();
       } catch (error) {
          console.error(error);
-         toast.error("Gagal mengupdate user");
+         toast.error("Failed to update user");
       }
    };
 
@@ -120,7 +120,7 @@ export const EditUserDialog = ({
                      </Dialog.Title>
 
                      <Dialog.Description className="mt-1 text-sm text-(--keenam)">
-                        Update informasi user
+                        Update user information
                      </Dialog.Description>
                   </div>
 
@@ -180,7 +180,7 @@ export const EditUserDialog = ({
                      </div>
 
                      <div className="flex flex-col gap-1.5">
-                        <label className={labelClass}>Password Lama</label>
+                        <label className={labelClass}>Old Password</label>
                         <input
                            type="text"
                            disabled
@@ -191,12 +191,12 @@ export const EditUserDialog = ({
 
                      <div className="flex flex-col gap-1.5">
                         <label className={labelClass}>
-                           Password Baru <span className="text-xs font-normal text-(--keenam)">(Biarkan kosong jika tidak diubah)</span>
+                           New Password <span className="text-xs font-normal text-(--keenam)">(Leave empty to keep unchanged)</span>
                         </label>
                         <div className="relative">
                            <input
                               type={showPassword ? "text" : "password"}
-                              placeholder="Input password baru"
+                              placeholder="Input new password"
                               {...register("password")}
                               className={`${inputClass} pr-10`}
                            />
@@ -204,7 +204,7 @@ export const EditUserDialog = ({
                               type="button"
                               onClick={() => setShowPassword(!showPassword)}
                               className="absolute right-3 top-1/2 -translate-y-1/2 text-(--keenam) hover:text-(--pertama) cursor-pointer"
-                              title={showPassword ? "Sembunyikan Password" : "Tampilkan Password"}
+                              title={showPassword ? "Hide Password" : "Show Password"}
                            >
                               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                            </button>

@@ -89,7 +89,7 @@ export const useFaceVerification = (
             setRegisteredDescriptor(null);
             setRegisteredUserName(null);
 
-            toast.loading("Persiapan scanning wajah...", { id: "face-scan" });
+            toast.loading("Preparing face scan...", { id: "face-scan" });
 
             const [
                usersResponse,
@@ -112,7 +112,7 @@ export const useFaceVerification = (
                !contentTypeUsers || !contentTypeUsers.includes("application/json") ||
                !contentTypeSession || !contentTypeSession.includes("application/json")
             ) {
-               toast.error("Gagal mendapatkan data sesi pengguna", {
+               toast.error("Failed to fetch user session data", {
                   id: "face-scan",
                });
                setIsFaceProcessing(false);
@@ -137,7 +137,7 @@ export const useFaceVerification = (
 
             if (!currentUserData || !currentUserData.image_url) {
                toast.error(
-                  "Wajah terdaftar tidak ditemukan",
+                  "Registered face not found",
                   {
                      id: "face-scan",
                   }
@@ -155,7 +155,7 @@ export const useFaceVerification = (
                !registeredFace
             ) {
                toast.error(
-                  "Wajah terdaftar tidak valid",
+                  "Registered face is invalid",
                   {
                      id: "face-scan",
                   }
@@ -167,7 +167,7 @@ export const useFaceVerification = (
             setRegisteredDescriptor(registeredFace.descriptor);
             setRegisteredUserName(currentUserData.name);
             setIsAutoVerifying(true);
-            toast.success("Mulai auto-scan wajah...", { id: "face-scan" });
+            toast.success("Starting automatic face scan...", { id: "face-scan" });
             setIsFaceProcessing(false);
          } catch (error) {
             console.error(
@@ -175,7 +175,7 @@ export const useFaceVerification = (
             );
 
             toast.error(
-               "Gagal memulai verifikasi face",
+               "Failed to start face verification",
                {
                   id: "face-scan",
                }

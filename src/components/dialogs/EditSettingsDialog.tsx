@@ -75,7 +75,7 @@ export const EditSettingsDialog = ({
 
    const handleUseCurrentLocation = () => {
       if (!navigator.geolocation) {
-         toast.error("Geolocation tidak didukung browser");
+         toast.error("Geolocation is not supported by your browser");
          return;
       }
 
@@ -83,8 +83,8 @@ export const EditSettingsDialog = ({
 
       const requestLocation = (attempt: number) => {
          const options = attempt === 1 
-            ? { enableHighAccuracy: true, timeout: 5000, maximumAge: Infinity }
-            : { enableHighAccuracy: false, timeout: 5000, maximumAge: Infinity };
+            ? { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            : { enableHighAccuracy: false, timeout: 10000, maximumAge: Infinity };
 
          navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -94,7 +94,7 @@ export const EditSettingsDialog = ({
                setValue("latitude", latitude);
                setValue("longitude", longitude);
                setIsGettingLocation(false);
-               toast.success("Lokasi berhasil diambil");
+               toast.success("Location successfully retrieved");
             },
             async (error) => {
                if (attempt === 1 && (error.code === error.TIMEOUT || error.code === error.POSITION_UNAVAILABLE)) {
@@ -114,7 +114,7 @@ export const EditSettingsDialog = ({
                         setValue("latitude", latitude);
                         setValue("longitude", longitude);
                         setIsGettingLocation(false);
-                        toast.warning("Lokasi presisi tidak tersedia. Menggunakan lokasi IP. Silakan geser pin pada peta untuk menyesuaikan secara manual.");
+                        toast.warning("Precise location unavailable. Falling back to IP location. Please adjust the pin manually.");
                         return;
                      }
                   } catch (e) {
@@ -129,7 +129,7 @@ export const EditSettingsDialog = ({
                            setValue("latitude", latitude);
                            setValue("longitude", longitude);
                            setIsGettingLocation(false);
-                           toast.warning("Lokasi presisi tidak tersedia. Menggunakan lokasi IP. Silakan geser pin pada peta untuk menyesuaikan secara manual.");
+                           toast.warning("Precise location unavailable. Falling back to IP location. Please adjust the pin manually.");
                            return;
                         }
                      } catch (err2) {}
@@ -138,13 +138,13 @@ export const EditSettingsDialog = ({
 
                setIsGettingLocation(false);
                
-               let errorMessage = "Gagal mengambil lokasi akurat.";
+               let errorMessage = "Failed to retrieve accurate location.";
                if (error.code === error.PERMISSION_DENIED) {
-                  errorMessage = "Akses lokasi ditolak. Izinkan browser untuk mengakses lokasi Anda.";
+                  errorMessage = "Location access denied. Please explicitly allow your browser to access your location settings.";
                } else if (error.code === error.POSITION_UNAVAILABLE) {
-                  errorMessage = "Informasi lokasi tidak tersedia. Nyalakan Wi-Fi perangkat Anda untuk akurasi terbaik.";
+                  errorMessage = "Location information is unavailable. Please ensure your device's GPS and Wi-Fi are turned on for the best accuracy.";
                } else if (error.code === error.TIMEOUT) {
-                  errorMessage = "Waktu habis. Pastikan 'Location Services' menyala di pengaturan OS laptop Anda, lalu coba lagi.";
+                  errorMessage = "Location request timed out. Please make sure 'Location Services' are enabled in your device's OS settings.";
                }
 
                toast.error(errorMessage);
@@ -175,7 +175,7 @@ export const EditSettingsDialog = ({
          onOpenChange(false);
          onSuccess();
       } catch {
-         toast.error("Gagal memperbarui pengaturan");
+         toast.error("Failed to update settings");
       }
    };
 
