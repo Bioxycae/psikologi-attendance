@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Clock } from "lucide-react";
 import { useEffect } from "react";
-import { useForm, Controller, type Control } from "react-hook-form";
+import { useForm, Controller, type Control, type FieldPath } from "react-hook-form";
 import { toast } from "sonner";
 
 import {
@@ -20,7 +20,7 @@ type EditCheckpointDialogProps = {
    onSuccess: () => void;
 };
 
-const TimeInput = ({ control, name, max, label }: { control: Control<any>, name: string, max: number, label: string }) => (
+const TimeInput = ({ control, name, max, label }: { control: Control<UpdateSettingsSchema>, name: FieldPath<UpdateSettingsSchema>, max: number, label: string }) => (
    <Controller
       name={name}
       control={control}

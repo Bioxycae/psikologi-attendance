@@ -120,7 +120,7 @@ export const UserAttendanceHistoryDialog = ({
                         </div>
                      ) : (
                         history.map((record) => {
-                           const date = new Date(record.attendance_time);
+                           const date = new Date((record as any).attendance_time);
                            const isCheckpoint = (record as any).checkpoint_verified;
                            const isCheckout = (record as any).checkout_verified;
                            
@@ -153,7 +153,7 @@ export const UserAttendanceHistoryDialog = ({
                                        </div>
                                        <div className="flex items-center gap-1">
                                           <MapPin size={16} />
-                                          {record.location_name || "Unknown Location"}
+                                          {(record as any).location_name || "Unknown Location"}
                                        </div>
                                     </div>
                                  </div>
