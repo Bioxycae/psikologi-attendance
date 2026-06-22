@@ -29,17 +29,15 @@ export const POST = async (
 
       const now = new Date();
 
-      const jakartaTime = new Date(
-         now.toLocaleString("en-US", {
-            timeZone: "Asia/Jakarta",
-         })
-      );
-
-      const currentHour =
-         jakartaTime.getHours();
-
-      const currentMinute =
-         jakartaTime.getMinutes();
+      const formatter = new Intl.DateTimeFormat("en-US", {
+         timeZone: "Asia/Jakarta",
+         hour: "numeric",
+         minute: "numeric",
+         hour12: false
+      });
+      const parts = formatter.formatToParts(now);
+      const currentHour = parseInt(parts.find(p => p.type === "hour")?.value || "0");
+      const currentMinute = parseInt(parts.find(p => p.type === "minute")?.value || "0");
 
       const attendanceHour =
          settings?.attendance_time_hour ?? 7;
@@ -69,7 +67,7 @@ export const POST = async (
          return NextResponse.json(
             {
                success: false,
-               message: `Attendance hanya bisa dilakukan antara jam ${String(attendanceHour).padStart(2, "0")}:${String(attendanceMinute).padStart(2, "0")} - ${String(checkoutHour).padStart(2, "0")}:${String(checkoutMinute).padStart(2, "0")}`,
+               message: `Attendance is only allowed between ${String(attendanceHour).padStart(2, "0")}:${String(attendanceMinute).padStart(2, "0")} - ${String(checkoutHour).padStart(2, "0")}:${String(checkoutMinute).padStart(2, "0")}`,
             },
             {
                status: 400,
@@ -87,7 +85,7 @@ export const POST = async (
             {
                success: false,
                message:
-                  "Hari ini sudah attendance",
+                  "Already checked in for today",
             },
             {
                status: 400,
@@ -119,7 +117,7 @@ export const POST = async (
          {
             success: false,
             message:
-               "Gagal membuat attendance",
+               "Failed to create attendance",
          },
          {
             status: 500,

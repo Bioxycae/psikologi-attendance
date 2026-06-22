@@ -6,6 +6,10 @@ import {
 } from "react";
 import * as faceapi from "face-api.js";
 import { toast } from "sonner";
+import {
+   getCachedFaceDescriptor,
+   preloadUserFaceDescriptor,
+} from "@/lib/faceDescriptorCache";
 
 export const useFaceVerification = (
    videoRef: React.RefObject<HTMLVideoElement | null>
@@ -34,6 +38,7 @@ export const useFaceVerification = (
    const stopAutoVerification = () => {
       setIsAutoVerifying(false);
       setIsFaceProcessing(false);
+      toast.dismiss("face-scan");
    };
 
    const resetFaceVerification =
@@ -91,81 +96,20 @@ export const useFaceVerification = (
 
             toast.loading("Preparing face scan...", { id: "face-scan" });
 
-            const [
-               usersResponse,
-               sessionResponse,
-            ] = await Promise.all([
-               fetch(
-                  "/api/users/faces",
-                  { cache: "no-store" }
-               ),
+            // Check cache first
+            let descriptorData = getCachedFaceDescriptor();
+            if (!descriptorData) {
+               descriptorData = await preloadUserFaceDescriptor();
+            }
 
-               fetch(
-                  "/api/users/me",
-                  { cache: "no-store" }
-               ),
-            ]);
-
-            const contentTypeUsers = usersResponse.headers.get("content-type");
-            const contentTypeSession = sessionResponse.headers.get("content-type");
-            if (
-               !contentTypeUsers || !contentTypeUsers.includes("application/json") ||
-               !contentTypeSession || !contentTypeSession.includes("application/json")
-            ) {
-               toast.error("Failed to fetch user session data", {
-                  id: "face-scan",
-               });
+            if (!descriptorData) {
+               toast.error("Registered face not found or invalid", { id: "face-scan" });
                setIsFaceProcessing(false);
                return;
             }
 
-            const usersResult =
-               await usersResponse.json();
-
-            const sessionResult =
-               await sessionResponse.json();
-
-            const users =
-               usersResult.data || [];
-
-            const currentUserName =
-               sessionResult.data?.name;
-
-            const currentUserData = users.find(
-               (user: { name: string; image_url: string | null }) => user.name === currentUserName
-            );
-
-            if (!currentUserData || !currentUserData.image_url) {
-               toast.error(
-                  "Registered face not found",
-                  {
-                     id: "face-scan",
-                  }
-               );
-               setIsFaceProcessing(false);
-               return;
-            }
-
-            const registeredFace =
-               await getFaceDescriptor(
-                  currentUserData.image_url
-               );
-
-            if (
-               !registeredFace
-            ) {
-               toast.error(
-                  "Registered face is invalid",
-                  {
-                     id: "face-scan",
-                  }
-               );
-               setIsFaceProcessing(false);
-               return;
-            }
-
-            setRegisteredDescriptor(registeredFace.descriptor);
-            setRegisteredUserName(currentUserData.name);
+            setRegisteredDescriptor(descriptorData.descriptor);
+            setRegisteredUserName(descriptorData.userName);
             setIsAutoVerifying(true);
             toast.success("Starting automatic face scan...", { id: "face-scan" });
             setIsFaceProcessing(false);
@@ -192,12 +136,11 @@ export const useFaceVerification = (
       const runDetectionLoop = async () => {
          if (!isSubscribed || !isAutoVerifying || !registeredDescriptor) return;
          if (isCurrentlyProcessing) {
-            timeoutId = setTimeout(runDetectionLoop, 1000);
+            timeoutId = setTimeout(runDetectionLoop, 200);
             return;
          }
 
          isCurrentlyProcessing = true;
-         setIsFaceProcessing(true);
 
          try {
             const currentFace = await detectCurrentFace();
@@ -211,7 +154,6 @@ export const useFaceVerification = (
                   setIsAutoVerifying(false);
                   toast.success(`Matched with ${registeredUserName}`, { id: "face-scan" });
                   isCurrentlyProcessing = false;
-                  setIsFaceProcessing(false);
                   return; // Stop the loop
                }
             }
@@ -221,8 +163,7 @@ export const useFaceVerification = (
 
          isCurrentlyProcessing = false;
          if (isSubscribed && isAutoVerifying) {
-            setIsFaceProcessing(false);
-            timeoutId = setTimeout(runDetectionLoop, 3000);
+            timeoutId = setTimeout(runDetectionLoop, 200);
          }
       };
 

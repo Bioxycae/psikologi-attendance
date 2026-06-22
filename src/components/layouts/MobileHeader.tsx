@@ -18,6 +18,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
+import { clearCachedFaceDescriptor } from "@/lib/faceDescriptorCache";
 
 type MobileHeaderProps = {
    title: string;
@@ -35,6 +36,7 @@ export const MobileHeader = ({
    const router = useRouter();
 
    const handleLogout = async () => {
+      clearCachedFaceDescriptor();
       await fetch("/api/logout", {
          method: "POST",
       });

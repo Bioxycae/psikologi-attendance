@@ -42,7 +42,6 @@ export const CameraSection = ({
       <div className="flex min-h-0 flex-col gap-3 xl:h-full xl:gap-5">
          <div className="relative min-h-[380px] overflow-hidden rounded-xl border border-(--pertama) bg-(--kedua) xl:min-h-0 xl:flex-1">
             <video
-               key={selectedCamera}
                ref={videoRef}
                autoPlay
                playsInline
@@ -52,13 +51,13 @@ export const CameraSection = ({
                }}
                className={`absolute inset-0 h-full w-full object-cover ${
                   !isCameraOpened
-                     ? "hidden"
-                     : "block"
-               }`}
+                     ? "opacity-0"
+                     : "opacity-100"
+               } transition-opacity duration-300`}
             />
 
             {!isCameraOpened && (
-               <div className="absolute inset-0 flex items-center justify-center">
+               <div className="absolute inset-0 flex items-center justify-center bg-(--kedua)">
                   <div className="text-center text-(--keenam)">
                      <ScanFace
                         size={72}

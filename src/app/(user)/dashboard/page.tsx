@@ -20,6 +20,7 @@ import {
    SessionCard,
 } from "@/components/layouts/SessionCard";
 import { useAttendance } from "@/hooks/useAttendance";
+import { preloadUserFaceDescriptor } from "@/lib/faceDescriptorCache";
 
 type DashboardUser = {
    id: string;
@@ -145,6 +146,9 @@ const DashboardPage = () => {
                await loadAttendanceHistory(
                   userResult.data.id
                );
+
+               // Background load face descriptor cache
+               preloadUserFaceDescriptor();
             } catch (
             error
             ) {

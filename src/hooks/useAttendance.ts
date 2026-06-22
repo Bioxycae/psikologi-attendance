@@ -167,41 +167,24 @@ export const useAttendance =
       const CHECKPOINT_END_HOUR =
          checkpointEndHour;
 
-      const getCheckpointStatus =
-         () => {
-            const now =
-               new Date();
+      const getCheckpointStatus = () => {
+         const now = new Date();
+         const formatter = new Intl.DateTimeFormat("en-US", {
+            timeZone: "Asia/Jakarta",
+            hour: "numeric",
+            hour12: false
+         });
+         const parts = formatter.formatToParts(now);
+         const currentHour = parseInt(parts.find(p => p.type === "hour")?.value || "0");
 
-            const jakartaTime =
-               new Date(
-                  now.toLocaleString(
-                     "en-US",
-                     {
-                        timeZone:
-                           "Asia/Jakarta",
-                     }
-                  )
-               );
-
-            const currentHour =
-               jakartaTime.getHours();
-
-            if (
-               currentHour <
-               CHECKPOINT_START_HOUR
-            ) {
-               return "locked";
-            }
-
-            if (
-               currentHour >=
-               CHECKPOINT_END_HOUR
-            ) {
-               return "expired";
-            }
-
-            return "available";
-         };
+         if (currentHour < CHECKPOINT_START_HOUR) {
+            return "locked";
+         }
+         if (currentHour >= CHECKPOINT_END_HOUR) {
+            return "expired";
+         }
+         return "available";
+      };
 
       const getAttendanceMode =
          (

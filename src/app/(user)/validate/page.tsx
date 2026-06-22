@@ -49,11 +49,18 @@ const ValidatePage = () => {
       attendanceMode ===
       "attendance";
 
+   const handleStopVerification = () => {
+      face.stopAutoVerification();
+      face.resetFaceVerification();
+      liveness.stopLivenessVerification();
+   };
+
    const liveness =
       useLivenessVerification(
          camera.videoRef,
          camera.isCameraOpened,
-         face.isFaceVerified
+         face.isFaceVerified,
+         handleStopVerification
       );
 
    const isAttendanceReady =
@@ -66,11 +73,17 @@ const ValidatePage = () => {
       );
 
    useEffect(() => {
-      if (location.isLocationPassed && !camera.isCameraOpened && !camera.isCameraLoading) {
+      if (
+         location.isLocationPassed && 
+         !attendance.isInitialLoading &&
+         attendanceMode !== "completed" &&
+         !camera.isCameraOpened && 
+         !camera.isCameraLoading
+      ) {
          camera.handleOpenCamera();
       }
    // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [location.isLocationPassed]);
+   }, [location.isLocationPassed, attendance.isInitialLoading, attendanceMode]);
 
    useEffect(() => {
       if (face.isFaceVerified && isAttendanceMode && !liveness.isLivenessProcessing && !liveness.isLivenessVerified) {
@@ -103,13 +116,6 @@ const ValidatePage = () => {
 
          await face.startAutoVerification();
       };
-
-   const handleStopVerification = () => {
-      face.stopAutoVerification();
-      face.resetFaceVerification();
-      liveness.stopLivenessVerification();
-      camera.handleCloseCamera();
-   };
 
    const handleSwitchCamera = () => {
       if (camera.cameraDevices.length <= 1) return;

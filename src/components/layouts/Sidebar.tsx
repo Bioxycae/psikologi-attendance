@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { ReactNode, useState } from "react";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
+import { clearCachedFaceDescriptor } from "@/lib/faceDescriptorCache";
 import {
    BrainCircuit,
    ChevronUp,
@@ -23,6 +24,7 @@ export const Sidebar = ({
    const router = useRouter();
 
    const handleLogout = async () => {
+      clearCachedFaceDescriptor();
       await fetch("/api/logout", {
          method: "POST",
       });

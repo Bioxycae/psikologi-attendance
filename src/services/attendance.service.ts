@@ -26,95 +26,67 @@ type CheckoutAttendancePayload = {
    location_name: string;
 };
 
-const normalizeCheckInTime =
-   (
-      minimumHour: number = 7,
-      minimumMinute: number = 30
-   ) => {
-      const now =
-         new Date();
+const normalizeCheckInTime = (
+   minimumHour: number = 7,
+   minimumMinute: number = 30
+) => {
+   const now = new Date();
+   const formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Jakarta",
+      year: "numeric", month: "numeric", day: "numeric",
+      hour: "numeric", minute: "numeric", second: "numeric",
+      hour12: false
+   });
+   const parts = formatter.formatToParts(now);
+   const hour = parseInt(parts.find(p => p.type === "hour")?.value || "0");
+   const minute = parseInt(parts.find(p => p.type === "minute")?.value || "0");
 
-      const jakartaTime =
-         new Date(
-            now.toLocaleString(
-               "en-US",
-               {
-                  timeZone:
-                     "Asia/Jakarta",
-               }
-            )
-         );
+   if (hour < minimumHour || (hour === minimumHour && minute < minimumMinute)) {
+      const year = parts.find(p => p.type === "year")?.value;
+      const monthStr = parts.find(p => p.type === "month")?.value || "0";
+      const dayStr = parts.find(p => p.type === "day")?.value || "0";
+      const month = monthStr.padStart(2, '0');
+      const day = dayStr.padStart(2, '0');
+      const minHrStr = String(minimumHour).padStart(2, '0');
+      const minMinStr = String(minimumMinute).padStart(2, '0');
+      
+      const jakartaISO = `${year}-${month}-${day}T${minHrStr}:${minMinStr}:00.000+07:00`;
+      return new Date(jakartaISO).toISOString();
+   }
 
-      if (
-         jakartaTime.getHours() <
-         minimumHour ||
-         (
-            jakartaTime.getHours() ===
-            minimumHour &&
-            jakartaTime.getMinutes() <
-            minimumMinute
-         )
-      ) {
-         jakartaTime.setHours(
-            minimumHour
-         );
+   return now.toISOString();
+};
 
-         jakartaTime.setMinutes(
-            minimumMinute
-         );
+const normalizeCheckoutTime = (
+   maximumHour: number = 16,
+   maximumMinute: number = 30
+) => {
+   const now = new Date();
+   const formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Jakarta",
+      year: "numeric", month: "numeric", day: "numeric",
+      hour: "numeric", minute: "numeric", second: "numeric",
+      hour12: false
+   });
+   const parts = formatter.formatToParts(now);
+   const hour = parseInt(parts.find(p => p.type === "hour")?.value || "0");
+   const minute = parseInt(parts.find(p => p.type === "minute")?.value || "0");
 
-         jakartaTime.setSeconds(
-            0
-         );
-      }
+   if (hour > maximumHour || (hour === maximumHour && minute > maximumMinute)) {
+      const year = parts.find(p => p.type === "year")?.value;
+      const monthStr = parts.find(p => p.type === "month")?.value || "0";
+      const dayStr = parts.find(p => p.type === "day")?.value || "0";
+      const month = monthStr.padStart(2, '0');
+      const day = dayStr.padStart(2, '0');
+      const maxHrStr = String(maximumHour).padStart(2, '0');
+      const maxMinStr = String(maximumMinute).padStart(2, '0');
+      
+      const jakartaISO = `${year}-${month}-${day}T${maxHrStr}:${maxMinStr}:00.000+07:00`;
+      return new Date(jakartaISO).toISOString();
+   }
 
-      return jakartaTime.toISOString();
-   };
-
-const normalizeCheckoutTime =
-   (
-      maximumHour: number = 16,
-      maximumMinute: number = 30
-   ) => {
-      const now =
-         new Date();
-
-      const jakartaTime =
-         new Date(
-            now.toLocaleString(
-               "en-US",
-               {
-                  timeZone:
-                     "Asia/Jakarta",
-               }
-            )
-         );
-
-      if (
-         jakartaTime.getHours() >
-         maximumHour ||
-         (
-            jakartaTime.getHours() ===
-            maximumHour &&
-            jakartaTime.getMinutes() >
-            maximumMinute
-         )
-      ) {
-         jakartaTime.setHours(
-            maximumHour
-         );
-
-         jakartaTime.setMinutes(
-            maximumMinute
-         );
-
-         jakartaTime.setSeconds(
-            0
-         );
-      }
-
-      return jakartaTime.toISOString();
-   };
+   return now.toISOString();
+};
 
 export const getTodayAttendance =
    async (
@@ -399,39 +371,20 @@ export const getAdminDashboardOverview =
       const supabase =
          createServerSupabase();
 
-      const now =
-         new Date();
+      const now = new Date();
+      const formatter = new Intl.DateTimeFormat("en-US", {
+         timeZone: "Asia/Jakarta",
+         year: "numeric",
+         month: "2-digit",
+         day: "2-digit"
+      });
+      const parts = formatter.formatToParts(now);
+      const month = parts.find(p => p.type === "month")?.value;
+      const day = parts.find(p => p.type === "day")?.value;
+      const year = parts.find(p => p.type === "year")?.value;
 
-      const jakartaDate =
-         new Date(
-            now.toLocaleString(
-               "en-US",
-               {
-                  timeZone:
-                     "Asia/Jakarta",
-               }
-            )
-         );
-
-      const startOfDay =
-         new Date(
-            jakartaDate.getFullYear(),
-            jakartaDate.getMonth(),
-            jakartaDate.getDate(),
-            0,
-            0,
-            0
-         );
-
-      const endOfDay =
-         new Date(
-            jakartaDate.getFullYear(),
-            jakartaDate.getMonth(),
-            jakartaDate.getDate(),
-            23,
-            59,
-            59
-         );
+      const startOfDayISO = `${year}-${month}-${day}T00:00:00.000+07:00`;
+      const endOfDayISO = `${year}-${month}-${day}T23:59:59.999+07:00`;
 
       const {
          count: totalAssistants,
@@ -470,11 +423,11 @@ export const getAdminDashboardOverview =
          .select("*")
          .gte(
             "attendance_time",
-            startOfDay.toISOString()
+            startOfDayISO
          )
          .lte(
             "attendance_time",
-            endOfDay.toISOString()
+            endOfDayISO
          )
          .order(
             "attendance_time",

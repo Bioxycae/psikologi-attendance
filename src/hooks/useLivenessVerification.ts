@@ -3,12 +3,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
    useEffect,
+   useRef,
    useState,
 } from "react";
 
 import * as faceapi from "face-api.js";
-
 import { toast } from "sonner";
+import { getCachedFaceDescriptor } from "@/lib/faceDescriptorCache";
 
 const expressions = [
    "happy",
@@ -32,7 +33,8 @@ type ExpressionType =
 export const useLivenessVerification = (
    videoRef: React.RefObject<HTMLVideoElement | null>,
    isCameraOpened: boolean,
-   isFaceVerified: boolean
+   isFaceVerified: boolean,
+   onFraudDetected?: () => void
 ) => {
    const [
       isLivenessVerified,
@@ -63,6 +65,8 @@ export const useLivenessVerification = (
       ExpressionType[]
    >([]);
 
+   const isProcessingRef = useRef(false);
+
    const generateRandomChallenges =
       () => {
          const shuffled = [
@@ -87,6 +91,7 @@ export const useLivenessVerification = (
    const verifyExpression =
       async () => {
          if (
+            !isProcessingRef.current ||
             !isLivenessProcessing ||
             !videoRef.current ||
             !isCameraOpened ||
@@ -102,10 +107,30 @@ export const useLivenessVerification = (
                   videoRef.current,
                   new faceapi.TinyFaceDetectorOptions()
                )
+               .withFaceLandmarks(true)
+               .withFaceDescriptor()
                .withFaceExpressions();
 
-         if (!detection) {
+         if (!isProcessingRef.current || !detection) {
             return;
+         }
+
+         const cachedFace = getCachedFaceDescriptor();
+         if (cachedFace && cachedFace.descriptor) {
+            const distance = faceapi.euclideanDistance(
+               detection.descriptor,
+               cachedFace.descriptor
+            );
+            // 0.5 is our standard threshold for face match
+            if (distance > 0.5) {
+               toast.dismiss("liveness");
+               toast.error(
+                  "Face swapped during liveness check! Verification reset.",
+                  { duration: 3500 }
+               );
+               if (onFraudDetected) onFraudDetected();
+               return;
+            }
          }
 
          const score =
@@ -194,6 +219,7 @@ export const useLivenessVerification = (
          setIsLivenessProcessing(
             true
          );
+         isProcessingRef.current = true;
 
          toast.loading(
             "Liveness verification started",
@@ -204,10 +230,12 @@ export const useLivenessVerification = (
       };
 
    const stopLivenessVerification = () => {
+      isProcessingRef.current = false;
       setIsLivenessProcessing(false);
       setIsLivenessVerified(false);
       setCompletedChallenges([]);
       setCurrentChallengeIndex(0);
+      toast.dismiss("liveness");
    };
 
    useEffect(() => {
