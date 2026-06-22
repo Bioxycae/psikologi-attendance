@@ -126,6 +126,7 @@ export const updateUser =
       id,
       name,
       email,
+      password,
       role,
       image,
    }: UpdateUserSchema & {
@@ -169,20 +170,26 @@ export const updateUser =
             uploadedImage.public_id;
       }
 
+      const updatePayload: any = {
+         name,
+         email,
+         role,
+         image_url:
+            imageUrl,
+         image_public_id:
+            imagePublicId,
+      };
+
+      if (password && password.trim() !== "") {
+         updatePayload.password = await bcrypt.hash(password, 12);
+      }
+
       const {
          data,
          error,
       } = await supabase
          .from("users")
-         .update({
-            name,
-            email,
-            role,
-            image_url:
-               imageUrl,
-            image_public_id:
-               imagePublicId,
-         })
+         .update(updatePayload)
          .eq("id", id)
          .select()
          .single();

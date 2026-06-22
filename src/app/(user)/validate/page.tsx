@@ -1,10 +1,12 @@
 "use client";
 
+import { useEffect } from "react";
 import {
    CheckSquare,
    MapPinCheck,
    ScanFace,
    Loader2,
+   RefreshCcw,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -63,6 +65,13 @@ const ValidatePage = () => {
             : true
       );
 
+   useEffect(() => {
+      if (location.isLocationPassed && !camera.isCameraOpened && !camera.isCameraLoading) {
+         camera.handleOpenCamera();
+      }
+   // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [location.isLocationPassed]);
+
    const handleVerifyFace =
       async () => {
          if (
@@ -113,26 +122,68 @@ const ValidatePage = () => {
          await liveness.handleVerifyLiveness();
       };
 
+   const handleSwitchCamera = () => {
+      if (camera.cameraDevices.length <= 1) return;
+      const currentIndex = camera.cameraDevices.findIndex(d => d.deviceId === camera.selectedCamera);
+      const nextIndex = (currentIndex + 1) % camera.cameraDevices.length;
+      camera.setSelectedCamera(camera.cameraDevices[nextIndex].deviceId);
+   };
+
+   if (attendance.isInitialLoading) {
+      return (
+         <div className="flex h-full min-h-[400px] items-center justify-center rounded-xl border border-(--pertama)">
+            <Loader2 size={32} className="animate-spin text-(--pertama)" />
+         </div>
+      );
+   }
+
    return (
       <div className="flex min-h-full flex-col gap-5 lg:h-full lg:gap-6">
-         <div className="shrink-0 rounded-xl border border-(--pertama) p-4 lg:px-8 lg:py-4">
+         <div className={`shrink-0 rounded-xl border border-(--pertama) ${location.isLocationPassed ? "p-4 lg:px-6 lg:py-3" : "p-4 lg:px-8 lg:py-4"}`}>
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-               <div>
-                  <h1 className="text-3xl font-semibold text-(--pertama)">
+               <div className={location.isLocationPassed ? "hidden lg:block" : "block"}>
+                  <h1 className={`${location.isLocationPassed ? "text-xl" : "text-3xl"} font-semibold text-(--pertama)`}>
                      Validate
                   </h1>
 
-                  <p className="mt-5 max-w-72 text-base leading-6 text-(--keenam) lg:mt-1 lg:max-w-none lg:text-sm">
-                     Verify yourself and ensure your location is accurate.
-                  </p>
+                  {!location.isLocationPassed && (
+                     <p className="mt-5 max-w-72 text-base leading-6 text-(--keenam) lg:mt-1 lg:max-w-none lg:text-sm">
+                        Verify yourself and ensure your location is accurate.
+                     </p>
+                  )}
                </div>
 
-               <div className="grid grid-cols-2 gap-2 lg:flex lg:items-center lg:gap-3">
-                  {location.isLocationPassed ? (
-                     <div className="flex h-14 sm:h-22 min-w-16 sm:min-w-22 flex-col items-center justify-center gap-1 sm:gap-2 rounded-md bg-teal-100 px-3 sm:px-4 text-sm sm:text-base font-semibold text-(--ketujuh) lg:h-26">
-                        <CheckSquare size={22} className="hidden sm:block" />
-                        Pass
-                     </div>
+               <div className={`flex w-full ${location.isLocationPassed || attendanceMode === "completed" ? "flex-row items-center justify-between lg:w-auto lg:justify-end lg:gap-3" : "flex-col gap-3 lg:w-auto lg:flex-row lg:items-center"}`}>
+                  {attendanceMode === "completed" ? (
+                     <button
+                        type="button"
+                        disabled
+                        className="flex h-14 w-full sm:h-22 lg:w-auto min-w-0 flex-col items-center justify-center gap-1 sm:gap-2 rounded-md bg-(--pertama) px-2 sm:px-4 text-[13px] sm:text-base font-semibold whitespace-nowrap text-white cursor-not-allowed opacity-50 lg:h-26 lg:min-w-45"
+                     >
+                        <CheckSquare size={24} className="hidden sm:block shrink-0" />
+                        <span className="truncate">Location Completed</span>
+                     </button>
+                  ) : location.isLocationPassed ? (
+                     <>
+                        <div className="flex h-10 items-center justify-center gap-2 rounded-md bg-teal-100 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-(--ketujuh) lg:h-11">
+                           <CheckSquare size={16} />
+                           Location Pass
+                        </div>
+
+                        <button
+                           type="button"
+                           onClick={() => {
+                              location.setIsLocationPassed(false);
+                              sessionStorage.removeItem("verifiedLocation");
+                              camera.handleCloseCamera();
+                              face.resetFaceVerification();
+                           }}
+                           className="flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md bg-orange-100 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-orange-700 transition-colors hover:bg-orange-200 lg:h-11"
+                        >
+                           <RefreshCcw size={16} />
+                           Relocate
+                        </button>
+                     </>
                   ) : (
                      <button
                         type="button"
@@ -141,42 +192,22 @@ const ValidatePage = () => {
                         }
 
                         disabled={
-                           location.isLoading || attendanceMode === "completed"
+                           location.isLoading
                         }
 
-                        className="flex h-14 sm:h-22 min-w-0 cursor-pointer flex-col items-center justify-center gap-1 sm:gap-2 rounded-md bg-(--pertama) px-3 sm:px-4 text-sm sm:text-base font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50 lg:h-26 lg:min-w-45"
+                        className="flex h-14 w-full sm:h-22 lg:w-auto min-w-0 cursor-pointer flex-col items-center justify-center gap-1 sm:gap-2 rounded-md bg-(--pertama) px-2 sm:px-4 text-[13px] sm:text-base font-semibold whitespace-nowrap text-white disabled:cursor-not-allowed disabled:opacity-50 lg:h-26 lg:min-w-45"
                      >
                         {location.isLoading ? (
-                           <Loader2 size={24} className="hidden sm:block animate-spin" />
+                           <Loader2 size={24} className="hidden sm:block animate-spin shrink-0" />
                         ) : (
-                           <MapPinCheck size={24} className="hidden sm:block" />
+                           <MapPinCheck size={24} className="hidden sm:block shrink-0" />
                         )}
 
-                        {location.isLoading
-                           ? "Checking..."
-                           : "Location Check"}
+                        <span className="truncate">
+                           {location.isLoading ? "Checking..." : "Location Check"}
+                        </span>
                      </button>
                   )}
-
-                  <button
-                     type="button"
-                     onClick={
-                        camera.handleOpenCamera
-                     }
-
-                     disabled={
-                        !location.isLocationPassed || attendanceMode === "completed" || camera.isCameraLoading
-                     }
-
-                     className="flex h-14 sm:h-22 min-w-0 cursor-pointer flex-col items-center justify-center gap-1 sm:gap-2 rounded-md bg-(--pertama) px-3 sm:px-4 text-sm sm:text-base font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-500 disabled:opacity-90 lg:h-26 lg:min-w-35"
-                  >
-                     {camera.isCameraLoading ? (
-                        <Loader2 size={24} className="hidden sm:block animate-spin" />
-                     ) : (
-                        <ScanFace size={24} className="hidden sm:block" />
-                     )}
-                     {camera.isCameraLoading ? "Opening..." : "Open Cam"}
-                  </button>
                </div>
             </div>
          </div>
@@ -331,6 +362,8 @@ const ValidatePage = () => {
                      isSubmittingAttendance={
                         attendance.isSubmittingAttendance
                      }
+
+                     onSwitchCamera={handleSwitchCamera}
 
                      onAttendance={() =>
                         attendance.handleAttendance({

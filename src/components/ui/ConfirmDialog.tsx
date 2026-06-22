@@ -23,9 +23,9 @@ export const ConfirmDialog = ({
          onOpenChange={onOpenChange}
       >
          <Dialog.Portal>
-            <Dialog.Overlay className="fixed inset-0 z-50 bg-black/30" />
+            <Dialog.Overlay className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" />
 
-            <Dialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[95vw] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-2xl border border-(--ketiga) bg-white p-7">
+            <Dialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[95vw] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-(--pertama) bg-(--kesembilan) p-7 shadow-xl">
                <div className="flex flex-col gap-6">
                   <Dialog.Title className="text-xl font-semibold text-(--pertama)">
                      {title}
@@ -41,7 +41,7 @@ export const ConfirmDialog = ({
                         onClick={() =>
                            onOpenChange(false)
                         }
-                        className="cursor-pointer rounded-xl border border-(--pertama) px-5 py-3 font-medium text-(--pertama)"
+                        className="cursor-pointer rounded-md border border-(--pertama) px-5 py-2.5 text-sm font-medium text-(--pertama) transition-colors hover:bg-(--ketiga)"
                      >
                         Batal
                      </button>
@@ -49,7 +49,7 @@ export const ConfirmDialog = ({
                      <button
                         type="button"
                         onClick={onConfirm}
-                        className="cursor-pointer rounded-xl bg-red-500 px-5 py-3 font-medium text-white"
+                        className="cursor-pointer rounded-md bg-red-600 hover:bg-red-700 transition-colors px-5 py-2.5 text-sm font-medium text-white"
                      >
                         Ya, lanjutkan
                      </button>

@@ -39,8 +39,8 @@ export async function POST(
          return apiResponse({
             message:
                "You are outside the attendance radius",
-
-            status: 403,
+            success: false,
+            status: 200,
          });
       }
 

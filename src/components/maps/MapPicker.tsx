@@ -4,12 +4,15 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-geosearch/dist/geosearch.css";
 
 import { MapContainer, Marker, TileLayer, useMapEvents, useMap } from "react-leaflet";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
 import L from "leaflet";
 
 const SearchControl = ({ onChange }: { onChange: ({ latitude, longitude }: { latitude: number, longitude: number }) => void }) => {
    const map = useMap();
+   const onChangeRef = useRef(onChange);
+   useEffect(() => { onChangeRef.current = onChange; }, [onChange]);
+
    useEffect(() => {
       const provider = new OpenStreetMapProvider();
       // @ts-ignore
@@ -24,19 +27,24 @@ const SearchControl = ({ onChange }: { onChange: ({ latitude, longitude }: { lat
 
       map.addControl(searchControl);
       
-      map.on("geosearch/showlocation", (result: any) => {
+      const handleShowLocation = (result: any) => {
          if (result && result.location) {
-            onChange({
+            onChangeRef.current({
                latitude: result.location.y,
                longitude: result.location.x,
             });
          }
-      });
+      };
+
+      map.on("geosearch/showlocation", handleShowLocation);
 
       return () => {
-         map.removeControl(searchControl);
+         try {
+            map.removeControl(searchControl);
+            map.off("geosearch/showlocation", handleShowLocation);
+         } catch (e) {}
       };
-   }, [map, onChange]);
+   }, [map]);
 
    return null;
 };
@@ -85,9 +93,17 @@ const LocationMarker = ({
    longitude,
    onChange,
 }: LocationMarkerProps) => {
+   const map = useMap();
+   const onChangeRef = useRef(onChange);
+   useEffect(() => { onChangeRef.current = onChange; }, [onChange]);
+
+   useEffect(() => {
+      map.flyTo([latitude, longitude], map.getZoom());
+   }, [latitude, longitude, map]);
+
    useMapEvents({
       click(event) {
-         onChange({
+         onChangeRef.current({
             latitude:
                event.latlng.lat,
 
@@ -113,9 +129,20 @@ export const MapPicker = ({
    longitude,
    onChange,
 }: MapPickerProps) => {
+   const [mountId, setMountId] = useState("");
+
+   useEffect(() => {
+      setMountId(Math.random().toString(36).substring(7));
+   }, []);
+
+   if (!mountId) {
+      return <div className="h-100 w-full rounded-3xl border border-(--ketiga) bg-slate-100 animate-pulse" />;
+   }
+
    return (
       <div className="overflow-hidden rounded-3xl border border-(--ketiga)">
          <MapContainer
+            key={mountId}
             center={[
                latitude,
                longitude,

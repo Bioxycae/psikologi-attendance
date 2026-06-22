@@ -204,15 +204,25 @@ export const useLivenessVerification = (
       };
 
    useEffect(() => {
-      const interval =
-         setInterval(() => {
-            verifyExpression();
-         }, 1000);
+      let isSubscribed = true;
+      let timeoutId: NodeJS.Timeout;
 
-      return () =>
-         clearInterval(
-            interval
-         );
+      const runDetection = async () => {
+         if (!isSubscribed) return;
+         await verifyExpression();
+         if (isSubscribed) {
+            timeoutId = setTimeout(runDetection, 1000);
+         }
+      };
+
+      if (isLivenessProcessing && !isLivenessVerified) {
+         runDetection();
+      }
+
+      return () => {
+         isSubscribed = false;
+         clearTimeout(timeoutId);
+      };
    }, [
       isCameraOpened,
       currentChallenge,

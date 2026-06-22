@@ -29,12 +29,9 @@ export const SessionCard = ({
             session.checkpoint_verified
          ) {
             return {
-               label:
-                  variant === "history"
-                     ? "Present"
-                     : "Completed",
+               label: "Completed",
                className:
-                  "bg-[var(--ketujuh)] text-[var(--kedua)]",
+                  "bg-green-100 text-green-700",
             };
          }
 
@@ -43,16 +40,16 @@ export const SessionCard = ({
             !session.checkpoint_verified
          ) {
             return {
-               label: "Checkpoint Missed",
+               label: "Incomplete",
                className:
-                  "bg-[var(--keempat)] text-[var(--kedua)]",
+                  "bg-yellow-100 text-yellow-700",
             };
          }
 
          return {
-            label: "In Progress",
+            label: "Missed Checkout",
             className:
-               "bg-[var(--kedelapan)] text-[var(--kedua)]",
+               "bg-red-100 text-red-700",
          };
       };
 

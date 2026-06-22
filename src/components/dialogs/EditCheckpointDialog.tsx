@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Clock } from "lucide-react";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller, type Control } from "react-hook-form";
 import { toast } from "sonner";
 
 import {
@@ -20,6 +20,33 @@ type EditCheckpointDialogProps = {
    onSuccess: () => void;
 };
 
+const TimeInput = ({ control, name, max, label }: { control: Control<any>, name: string, max: number, label: string }) => (
+   <Controller
+      name={name}
+      control={control}
+      render={({ field }) => (
+         <div className="flex w-full flex-col gap-1.5">
+            <label className="text-center text-xs font-medium text-(--keenam)">{label}</label>
+            <input
+               type="text"
+               inputMode="numeric"
+               maxLength={2}
+               value={String(field.value ?? 0).padStart(2, "0")}
+               onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "");
+                  let num = parseInt(val, 10);
+                  if (isNaN(num)) num = 0;
+                  if (num > max) num = max;
+                  field.onChange(num);
+               }}
+               onBlur={() => field.onBlur()}
+               className="h-11 w-full rounded-md border border-(--pertama) bg-transparent px-2 text-center text-sm font-semibold text-(--pertama) outline-none focus:border-(--ketiga)"
+            />
+         </div>
+      )}
+   />
+);
+
 export const EditCheckpointDialog = ({
    open,
    onOpenChange,
@@ -30,6 +57,7 @@ export const EditCheckpointDialog = ({
       register,
       handleSubmit,
       reset,
+      control,
       formState: { errors, isSubmitting },
    } = useForm<UpdateSettingsSchema>({
       resolver: zodResolver(updateSettingsSchema),
@@ -74,15 +102,12 @@ export const EditCheckpointDialog = ({
       }
    };
 
-   const inputClass = "h-11 w-full rounded-md border border-(--pertama) px-4 text-sm text-(--pertama) outline-none";
-   const labelClass = "text-sm font-medium text-(--pertama)";
-
    return (
       <Dialog.Root open={open} onOpenChange={onOpenChange}>
          <Dialog.Portal>
-            <Dialog.Overlay className="fixed inset-0 z-50 bg-black/30" />
+            <Dialog.Overlay className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" />
 
-            <Dialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[95vw] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border border-(--pertama) bg-white p-6">
+            <Dialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[95vw] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-(--pertama) bg-(--kesembilan) p-6 shadow-xl">
                <div className="flex flex-col gap-5">
                   <div>
                      <Dialog.Title className="text-xl font-semibold text-(--pertama)">
@@ -101,33 +126,10 @@ export const EditCheckpointDialog = ({
                               Checkpoint Window
                            </h3>
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
-                           <div className="flex flex-col gap-1.5">
-                              <label className={labelClass}>Start Hour</label>
-                              <input
-                                 type="number"
-                                 min="0"
-                                 max="23"
-                                 {...register("checkpoint_start_hour", { valueAsNumber: true })}
-                                 className={inputClass}
-                              />
-                              {errors.checkpoint_start_hour && (
-                                 <p className="text-xs text-red-500">{errors.checkpoint_start_hour.message}</p>
-                              )}
-                           </div>
-                           <div className="flex flex-col gap-1.5">
-                              <label className={labelClass}>End Hour</label>
-                              <input
-                                 type="number"
-                                 min="0"
-                                 max="23"
-                                 {...register("checkpoint_end_hour", { valueAsNumber: true })}
-                                 className={inputClass}
-                              />
-                              {errors.checkpoint_end_hour && (
-                                 <p className="text-xs text-red-500">{errors.checkpoint_end_hour.message}</p>
-                              )}
-                           </div>
+                        <div className="mx-auto flex w-full max-w-xs items-end justify-center gap-3">
+                           <TimeInput control={control} name="checkpoint_start_hour" max={23} label="Start Hour" />
+                           <span className="mb-2.5 text-xl font-bold text-(--pertama)">-</span>
+                           <TimeInput control={control} name="checkpoint_end_hour" max={23} label="End Hour" />
                         </div>
                      </div>
 
@@ -135,33 +137,10 @@ export const EditCheckpointDialog = ({
                         <h3 className="text-sm font-semibold text-(--pertama)">
                            Attendance Time
                         </h3>
-                        <div className="grid grid-cols-2 gap-4">
-                           <div className="flex flex-col gap-1.5">
-                              <label className={labelClass}>Hour</label>
-                              <input
-                                 type="number"
-                                 min="0"
-                                 max="23"
-                                 {...register("attendance_time_hour", { valueAsNumber: true })}
-                                 className={inputClass}
-                              />
-                              {errors.attendance_time_hour && (
-                                 <p className="text-xs text-red-500">{errors.attendance_time_hour.message}</p>
-                              )}
-                           </div>
-                           <div className="flex flex-col gap-1.5">
-                              <label className={labelClass}>Minute</label>
-                              <input
-                                 type="number"
-                                 min="0"
-                                 max="59"
-                                 {...register("attendance_time_minute", { valueAsNumber: true })}
-                                 className={inputClass}
-                              />
-                              {errors.attendance_time_minute && (
-                                 <p className="text-xs text-red-500">{errors.attendance_time_minute.message}</p>
-                              )}
-                           </div>
+                        <div className="mx-auto flex w-full max-w-xs items-end justify-center gap-3">
+                           <TimeInput control={control} name="attendance_time_hour" max={23} label="Hour" />
+                           <span className="mb-2.5 text-xl font-bold text-(--pertama)">:</span>
+                           <TimeInput control={control} name="attendance_time_minute" max={59} label="Minute" />
                         </div>
                      </div>
 
@@ -169,33 +148,10 @@ export const EditCheckpointDialog = ({
                         <h3 className="text-sm font-semibold text-(--pertama)">
                            Checkout Time
                         </h3>
-                        <div className="grid grid-cols-2 gap-4">
-                           <div className="flex flex-col gap-1.5">
-                              <label className={labelClass}>Hour</label>
-                              <input
-                                 type="number"
-                                 min="0"
-                                 max="23"
-                                 {...register("checkout_time_hour", { valueAsNumber: true })}
-                                 className={inputClass}
-                              />
-                              {errors.checkout_time_hour && (
-                                 <p className="text-xs text-red-500">{errors.checkout_time_hour.message}</p>
-                              )}
-                           </div>
-                           <div className="flex flex-col gap-1.5">
-                              <label className={labelClass}>Minute</label>
-                              <input
-                                 type="number"
-                                 min="0"
-                                 max="59"
-                                 {...register("checkout_time_minute", { valueAsNumber: true })}
-                                 className={inputClass}
-                              />
-                              {errors.checkout_time_minute && (
-                                 <p className="text-xs text-red-500">{errors.checkout_time_minute.message}</p>
-                              )}
-                           </div>
+                        <div className="mx-auto flex w-full max-w-xs items-end justify-center gap-3">
+                           <TimeInput control={control} name="checkout_time_hour" max={23} label="Hour" />
+                           <span className="mb-2.5 text-xl font-bold text-(--pertama)">:</span>
+                           <TimeInput control={control} name="checkout_time_minute" max={59} label="Minute" />
                         </div>
                      </div>
 

@@ -32,6 +32,11 @@ export const useAttendance =
       ] = useState<any>(null);
 
       const [
+         isInitialLoading,
+         setIsInitialLoading,
+      ] = useState(true);
+
+      const [
          checkpointStartHour,
          setCheckpointStartHour,
       ] = useState(11);
@@ -147,6 +152,8 @@ export const useAttendance =
                   console.error(
                      error
                   );
+               } finally {
+                  setIsInitialLoading(false);
                }
             };
 
@@ -466,6 +473,7 @@ export const useAttendance =
       return {
          todayAttendance,
          isSubmittingAttendance,
+         isInitialLoading,
          loadTodayAttendance,
          handleAttendance,
          getAttendanceMode,

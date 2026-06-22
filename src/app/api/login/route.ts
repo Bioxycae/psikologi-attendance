@@ -81,7 +81,6 @@ export async function POST(request: Request) {
          .from("user_sessions")
          .delete()
          .eq("user_id", user.id)
-         .eq("ip_address", ipAddress)
          .eq("device_info", userAgent);
 
       const { error: sessionError } = await supabase

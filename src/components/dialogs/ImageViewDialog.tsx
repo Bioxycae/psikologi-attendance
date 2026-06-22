@@ -20,9 +20,9 @@ export const ImageViewDialog = ({
          onOpenChange={onOpenChange}
       >
          <Dialog.Portal>
-            <Dialog.Overlay className="fixed inset-0 z-50 bg-black/30" />
+            <Dialog.Overlay className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" />
             
-            <Dialog.Content aria-describedby={undefined} className="fixed top-1/2 left-1/2 z-50 w-[95vw] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-(--ketiga) bg-white p-7 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+            <Dialog.Content aria-describedby={undefined} className="fixed top-1/2 left-1/2 z-50 w-[95vw] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-lg border border-(--pertama) bg-(--kesembilan) p-7 shadow-xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
                <div className="flex flex-col gap-6">
                   <div className="flex items-center justify-between">
                      <Dialog.Title className="text-2xl font-semibold text-(--pertama)">

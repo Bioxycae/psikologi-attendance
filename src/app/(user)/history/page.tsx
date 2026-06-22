@@ -369,17 +369,17 @@ const HistoryPage =
                session.checkout_verified &&
                session.checkpoint_verified
             ) {
-               return "Present";
+               return "Completed";
             }
 
             if (
                session.checkout_verified &&
                !session.checkpoint_verified
             ) {
-               return "Absent";
+               return "Incomplete";
             }
 
-            return "Late";
+            return "Missed Checkout";
          };
 
       const formatTime =

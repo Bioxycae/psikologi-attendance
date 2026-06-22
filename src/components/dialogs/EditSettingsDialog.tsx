@@ -81,21 +81,79 @@ export const EditSettingsDialog = ({
 
       setIsGettingLocation(true);
 
-      navigator.geolocation.getCurrentPosition(
-         (position) => {
-            const { latitude, longitude } = position.coords;
-            setLatitude(latitude);
-            setLongitude(longitude);
-            setValue("latitude", latitude);
-            setValue("longitude", longitude);
-            setIsGettingLocation(false);
-            toast.success("Lokasi berhasil diambil");
-         },
-         () => {
-            setIsGettingLocation(false);
-            toast.error("Gagal mengambil lokasi");
-         }
-      );
+      const requestLocation = (attempt: number) => {
+         const options = attempt === 1 
+            ? { enableHighAccuracy: true, timeout: 5000, maximumAge: Infinity }
+            : { enableHighAccuracy: false, timeout: 5000, maximumAge: Infinity };
+
+         navigator.geolocation.getCurrentPosition(
+            (position) => {
+               const { latitude, longitude } = position.coords;
+               setLatitude(latitude);
+               setLongitude(longitude);
+               setValue("latitude", latitude);
+               setValue("longitude", longitude);
+               setIsGettingLocation(false);
+               toast.success("Lokasi berhasil diambil");
+            },
+            async (error) => {
+               if (attempt === 1 && (error.code === error.TIMEOUT || error.code === error.POSITION_UNAVAILABLE)) {
+                  requestLocation(2);
+                  return;
+               }
+
+               if (error.code === error.TIMEOUT || error.code === error.POSITION_UNAVAILABLE) {
+                  try {
+                     const ipRes = await fetch("https://get.geojs.io/v1/ip/geo.json");
+                     const ipData = await ipRes.json();
+                     if (ipData && ipData.latitude && ipData.longitude) {
+                        const latitude = Number(ipData.latitude);
+                        const longitude = Number(ipData.longitude);
+                        setLatitude(latitude);
+                        setLongitude(longitude);
+                        setValue("latitude", latitude);
+                        setValue("longitude", longitude);
+                        setIsGettingLocation(false);
+                        toast.warning("Lokasi presisi tidak tersedia. Menggunakan lokasi IP. Silakan geser pin pada peta untuk menyesuaikan secara manual.");
+                        return;
+                     }
+                  } catch (e) {
+                     try {
+                        const ipRes2 = await fetch("https://ipapi.co/json/");
+                        const ipData2 = await ipRes2.json();
+                        if (ipData2 && ipData2.latitude && ipData2.longitude) {
+                           const latitude = Number(ipData2.latitude);
+                           const longitude = Number(ipData2.longitude);
+                           setLatitude(latitude);
+                           setLongitude(longitude);
+                           setValue("latitude", latitude);
+                           setValue("longitude", longitude);
+                           setIsGettingLocation(false);
+                           toast.warning("Lokasi presisi tidak tersedia. Menggunakan lokasi IP. Silakan geser pin pada peta untuk menyesuaikan secara manual.");
+                           return;
+                        }
+                     } catch (err2) {}
+                  }
+               }
+
+               setIsGettingLocation(false);
+               
+               let errorMessage = "Gagal mengambil lokasi akurat.";
+               if (error.code === error.PERMISSION_DENIED) {
+                  errorMessage = "Akses lokasi ditolak. Izinkan browser untuk mengakses lokasi Anda.";
+               } else if (error.code === error.POSITION_UNAVAILABLE) {
+                  errorMessage = "Informasi lokasi tidak tersedia. Nyalakan Wi-Fi perangkat Anda untuk akurasi terbaik.";
+               } else if (error.code === error.TIMEOUT) {
+                  errorMessage = "Waktu habis. Pastikan 'Location Services' menyala di pengaturan OS laptop Anda, lalu coba lagi.";
+               }
+
+               toast.error(errorMessage);
+            },
+            options
+         );
+      };
+
+      requestLocation(1);
    };
 
    const onSubmit = async (values: UpdateSettingsSchema) => {
@@ -127,9 +185,9 @@ export const EditSettingsDialog = ({
    return (
       <Dialog.Root open={open} onOpenChange={onOpenChange}>
          <Dialog.Portal>
-            <Dialog.Overlay className="fixed inset-0 z-50 bg-black/30" />
+            <Dialog.Overlay className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" />
 
-            <Dialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[95vw] max-w-3xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border border-(--pertama) bg-white p-6">
+            <Dialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[95vw] max-w-3xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-(--pertama) bg-(--kesembilan) p-6 shadow-xl">
                <div className="flex flex-col gap-5">
                   <div>
                      <Dialog.Title className="text-xl font-semibold text-(--pertama)">

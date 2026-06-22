@@ -53,6 +53,11 @@ export async function PUT(
                   "email"
                ),
 
+            password:
+               formData.get(
+                  "password"
+               ) || "",
+
             role:
                formData.get(
                   "role"

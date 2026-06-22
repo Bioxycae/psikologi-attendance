@@ -92,7 +92,7 @@ export const SessionDetailDialog = ({
                   <div className="flex items-center justify-between border-b border-(--kedua)/10 py-3.5">
                      <span className="font-medium text-(--kedua)/70 min-w-[140px]">Checkpoint Status</span>
                      <span className="font-bold text-right flex-1">
-                        {session.checkpoint_verified ? "Completed" : "Missed"}
+                        {session.checkpoint_verified ? "Completed" : "Incomplete"}
                      </span>
                   </div>
 

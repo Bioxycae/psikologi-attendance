@@ -57,6 +57,7 @@ export const useCamera =
 
                const devices =
                   await navigator.mediaDevices.enumerateDevices();
+               console.log("Enumerated devices:", devices);
 
                const cameras =
                   devices
@@ -166,6 +167,17 @@ export const useCamera =
             }
          };
 
+      const handleCloseCamera = () => {
+         if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => track.stop());
+            streamRef.current = null;
+         }
+         if (videoRef.current) {
+            videoRef.current.srcObject = null;
+         }
+         setIsCameraOpened(false);
+      };
+
       useEffect(() => {
          loadCameraDevices();
       }, []);
@@ -208,5 +220,6 @@ export const useCamera =
 
          setSelectedCamera,
          handleOpenCamera,
+         handleCloseCamera,
       };
    };

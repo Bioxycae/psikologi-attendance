@@ -88,9 +88,9 @@ export const CreateUserDialog = ({
          onOpenChange(open);
       }}>
          <Dialog.Portal>
-            <Dialog.Overlay className="fixed inset-0 z-40 bg-black/30" />
+            <Dialog.Overlay className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm" />
 
-            <Dialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[95vw] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border border-(--pertama) bg-white p-6">
+            <Dialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[95vw] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-(--pertama) bg-(--kesembilan) p-6 shadow-xl">
                <div className="flex flex-col gap-5">
                   <div>
                      <Dialog.Title className="text-xl font-semibold text-(--pertama)">

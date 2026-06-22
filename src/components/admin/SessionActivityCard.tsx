@@ -24,7 +24,7 @@ export const SessionActivityCard = ({
       ) {
          return {
             label: "Completed",
-            className: "bg-[var(--ketujuh)] text-(--kedua)",
+            className: "bg-green-100 text-green-700",
          };
       }
 
@@ -33,14 +33,14 @@ export const SessionActivityCard = ({
          !session.checkpoint_verified
       ) {
          return {
-            label: "Checkpoint Missed",
-            className: "bg-[var(--keempat)] text-(--kedua)",
+            label: "Incomplete",
+            className: "bg-yellow-100 text-yellow-700",
          };
       }
 
       return {
-         label: "In Progress",
-         className: "bg-[var(--kedelapan)] text-(--kedua)",
+         label: "Missed Checkout",
+         className: "bg-red-100 text-red-700",
       };
    };
 

@@ -3,7 +3,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Dialog from "@radix-ui/react-dialog";
-import { ChevronDown, ImagePlus } from "lucide-react";
+import { ChevronDown, ImagePlus, Eye, EyeOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
@@ -34,6 +34,7 @@ export const EditUserDialog = ({
 }: EditUserDialogProps) => {
    const [previewImage, setPreviewImage] = useState<string | null>(null);
    const [isRoleMenuOpen, setIsRoleMenuOpen] = useState(false);
+   const [showPassword, setShowPassword] = useState(false);
 
    const {
       register,
@@ -70,6 +71,7 @@ export const EditUserDialog = ({
          const formData = new FormData();
          formData.append("name", data.name);
          formData.append("email", data.email);
+         if (data.password) formData.append("password", data.password);
          formData.append("role", data.role);
          if (data.image) formData.append("image", data.image);
 
@@ -86,6 +88,10 @@ export const EditUserDialog = ({
          }
 
          toast.success(result.message);
+         if (data.password) {
+            navigator.clipboard.writeText(data.password);
+            toast.success("Password baru berhasil dicopy!");
+         }
          reset();
          onOpenChange(false);
          onSuccess();
@@ -104,9 +110,9 @@ export const EditUserDialog = ({
          onOpenChange(open);
       }}>
          <Dialog.Portal>
-            <Dialog.Overlay className="fixed inset-0 z-40 bg-black/30" />
+            <Dialog.Overlay className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm" />
 
-            <Dialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[95vw] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border border-(--pertama) bg-white p-6">
+            <Dialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[95vw] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-(--pertama) bg-(--kesembilan) p-6 shadow-xl">
                <div className="flex flex-col gap-5">
                   <div>
                      <Dialog.Title className="text-xl font-semibold text-(--pertama)">
@@ -170,6 +176,41 @@ export const EditUserDialog = ({
                         />
                         {errors.email && (
                            <p className="text-xs text-red-500">{errors.email.message}</p>
+                        )}
+                     </div>
+
+                     <div className="flex flex-col gap-1.5">
+                        <label className={labelClass}>Password Lama</label>
+                        <input
+                           type="text"
+                           disabled
+                           value="•••••••• (Encrypted)"
+                           className={`${inputClass} bg-gray-100/50 text-gray-500 cursor-not-allowed`}
+                        />
+                     </div>
+
+                     <div className="flex flex-col gap-1.5">
+                        <label className={labelClass}>
+                           Password Baru <span className="text-xs font-normal text-(--keenam)">(Biarkan kosong jika tidak diubah)</span>
+                        </label>
+                        <div className="relative">
+                           <input
+                              type={showPassword ? "text" : "password"}
+                              placeholder="Input password baru"
+                              {...register("password")}
+                              className={`${inputClass} pr-10`}
+                           />
+                           <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-(--keenam) hover:text-(--pertama) cursor-pointer"
+                              title={showPassword ? "Sembunyikan Password" : "Tampilkan Password"}
+                           >
+                              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                           </button>
+                        </div>
+                        {errors.password && (
+                           <p className="text-xs text-red-500">{errors.password.message}</p>
                         )}
                      </div>
 

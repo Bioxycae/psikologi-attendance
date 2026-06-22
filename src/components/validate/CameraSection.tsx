@@ -94,7 +94,7 @@ export const CameraSection = ({
                )}
          </div>
 
-         <div className="shrink-0 rounded-xl border border-(--pertama) p-4 xl:p-5">
+         <div className="hidden shrink-0 rounded-xl border border-(--pertama) p-4 xl:block xl:p-5">
             <div className="flex items-center gap-3 xl:gap-4">
                <p className="shrink-0 text-base font-semibold text-(--pertama)">
                   Camera :
@@ -136,10 +136,10 @@ export const CameraSection = ({
                            </div>
                         ) : (
                            cameraDevices.map(
-                              device => (
+                              (device, index) => (
                                  <button
                                     key={
-                                       device.deviceId
+                                       device.deviceId ? `${device.deviceId}-${index}` : `cam-${index}`
                                     }
                                     type="button"
                                     onClick={() => {
