@@ -1,6 +1,7 @@
 "use client";
 
 import {
+   useEffect,
    useState,
 } from "react";
 import * as faceapi from "face-api.js";
@@ -26,6 +27,15 @@ export const useFaceVerification = (
       null
    );
 
+   const [isAutoVerifying, setIsAutoVerifying] = useState(false);
+   const [registeredDescriptor, setRegisteredDescriptor] = useState<Float32Array | null>(null);
+   const [registeredUserName, setRegisteredUserName] = useState<string | null>(null);
+
+   const stopAutoVerification = () => {
+      setIsAutoVerifying(false);
+      setIsFaceProcessing(false);
+   };
+
    const resetFaceVerification =
       () => {
          setIsFaceVerified(
@@ -35,6 +45,7 @@ export const useFaceVerification = (
          setMatchedUser(
             null
          );
+         stopAutoVerification();
       };
 
    const getFaceDescriptor = async (
@@ -69,41 +80,16 @@ export const useFaceVerification = (
             .withFaceDescriptor();
       };
 
-   const handleVerifyFace =
+   const startAutoVerification =
       async () => {
          try {
-            setIsFaceProcessing(
-               true
-            );
+            setIsFaceProcessing(true);
+            setMatchedUser(null);
+            setIsFaceVerified(false);
+            setRegisteredDescriptor(null);
+            setRegisteredUserName(null);
 
-            setMatchedUser(
-               null
-            );
-
-            setIsFaceVerified(
-               false
-            );
-
-            toast.loading(
-               "Scanning face...",
-               {
-                  id: "face-scan",
-               }
-            );
-
-            const currentFace =
-               await detectCurrentFace();
-
-            if (!currentFace) {
-               toast.error(
-                  "Wajah tidak terdeteksi",
-                  {
-                     id: "face-scan",
-                  }
-               );
-
-               return;
-            }
+            toast.loading("Persiapan scanning wajah...", { id: "face-scan" });
 
             const [
                usersResponse,
@@ -129,6 +115,7 @@ export const useFaceVerification = (
                toast.error("Gagal mendapatkan data sesi pengguna", {
                   id: "face-scan",
                });
+               setIsFaceProcessing(false);
                return;
             }
 
@@ -155,7 +142,7 @@ export const useFaceVerification = (
                      id: "face-scan",
                   }
                );
-
+               setIsFaceProcessing(false);
                return;
             }
 
@@ -173,72 +160,93 @@ export const useFaceVerification = (
                      id: "face-scan",
                   }
                );
-
+               setIsFaceProcessing(false);
                return;
             }
 
-            const distance =
-               faceapi.euclideanDistance(
-                  currentFace.descriptor,
-                  registeredFace.descriptor
-               );
-
-            const isMatched =
-               distance < 0.5;
-
-            setMatchedUser(
-               isMatched
-                  ? currentUserData.name
-                  : null
-            );
-
-            setIsFaceVerified(
-               isMatched
-            );
-
-            if (!isMatched) {
-               toast.error(
-                  "Wajah tidak cocok",
-                  {
-                     id: "face-scan",
-                  }
-               );
-
-               return;
-            }
-
-            toast.success(
-               `Matched with ${currentUserData.name}`,
-               {
-                  id: "face-scan",
-               }
-            );
+            setRegisteredDescriptor(registeredFace.descriptor);
+            setRegisteredUserName(currentUserData.name);
+            setIsAutoVerifying(true);
+            toast.success("Mulai auto-scan wajah...", { id: "face-scan" });
+            setIsFaceProcessing(false);
          } catch (error) {
             console.error(
                error
             );
 
             toast.error(
-               "Gagal verifikasi face",
+               "Gagal memulai verifikasi face",
                {
                   id: "face-scan",
                }
             );
-         } finally {
-            setIsFaceProcessing(
-               false
-            );
+            setIsFaceProcessing(false);
          }
       };
+
+   useEffect(() => {
+      let isSubscribed = true;
+      let timeoutId: NodeJS.Timeout;
+      let isCurrentlyProcessing = false;
+
+      const runDetectionLoop = async () => {
+         if (!isSubscribed || !isAutoVerifying || !registeredDescriptor) return;
+         if (isCurrentlyProcessing) {
+            timeoutId = setTimeout(runDetectionLoop, 1000);
+            return;
+         }
+
+         isCurrentlyProcessing = true;
+         setIsFaceProcessing(true);
+
+         try {
+            const currentFace = await detectCurrentFace();
+            if (currentFace) {
+               const distance = faceapi.euclideanDistance(currentFace.descriptor, registeredDescriptor);
+               const isMatched = distance < 0.5;
+
+               if (isMatched && isSubscribed) {
+                  setMatchedUser(registeredUserName);
+                  setIsFaceVerified(true);
+                  setIsAutoVerifying(false);
+                  toast.success(`Matched with ${registeredUserName}`, { id: "face-scan" });
+                  isCurrentlyProcessing = false;
+                  setIsFaceProcessing(false);
+                  return; // Stop the loop
+               }
+            }
+         } catch (error) {
+            console.error("Face detection error during loop", error);
+         }
+
+         isCurrentlyProcessing = false;
+         if (isSubscribed && isAutoVerifying) {
+            setIsFaceProcessing(false);
+            timeoutId = setTimeout(runDetectionLoop, 3000);
+         }
+      };
+
+      if (isAutoVerifying && registeredDescriptor) {
+         runDetectionLoop();
+      }
+
+      return () => {
+         isSubscribed = false;
+         clearTimeout(timeoutId);
+      };
+   // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [isAutoVerifying, registeredDescriptor, registeredUserName]);
 
    return {
       isFaceVerified,
       isFaceProcessing,
       matchedUser,
+      isAutoVerifying,
 
       setIsFaceVerified,
       setMatchedUser,
       resetFaceVerification,
-      handleVerifyFace,
+      startAutoVerification,
+      stopAutoVerification,
    };
 };

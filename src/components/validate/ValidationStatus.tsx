@@ -9,12 +9,13 @@ type ValidationStatusProps = {
    onVerifyLocation: () => void;
    isFaceVerified: boolean;
    isFaceProcessing: boolean;
-   onVerifyFace: () => void;
+   isAutoVerifying: boolean;
+   onStartVerification: () => void;
+   onStopVerification: () => void;
    currentChallenge: string | null;
    completedChallenges: string[];
    isLivenessVerified: boolean;
    isLivenessProcessing: boolean;
-   onVerifyLiveness: () => void;
    isAttendanceReady: boolean;
    isSubmittingAttendance: boolean;
    onAttendance: () => void;
@@ -56,12 +57,13 @@ export const ValidationStatus = ({
    detectedFaceName,
    isFaceVerified,
    isFaceProcessing,
-   onVerifyFace,
+   isAutoVerifying,
+   onStartVerification,
+   onStopVerification,
    currentChallenge,
    completedChallenges,
    isLivenessVerified,
    isLivenessProcessing,
-   onVerifyLiveness,
    isAttendanceReady,
    isSubmittingAttendance,
    onAttendance,
@@ -75,41 +77,37 @@ export const ValidationStatus = ({
             : "Check Out";
 
    const mobileButtonLabel =
-      !isFaceVerified
-         ? isFaceProcessing
-            ? "Processing Biometric..."
-            : "Verify Biometric"
-         : mode === "attendance" &&
-              !isLivenessVerified
-            ? isLivenessProcessing
-               ? currentChallenge ? `Please ${currentChallenge}...` : "Processing Liveness..."
-               : "Verify Liveness"
-            : isSubmittingAttendance
-               ? "Processing..."
-               : attendanceButtonLabel;
+      isSubmittingAttendance
+         ? "Processing..."
+         : isAttendanceReady
+            ? attendanceButtonLabel
+            : !isFaceVerified
+               ? isAutoVerifying
+                  ? "Scanning Face..."
+                  : isFaceProcessing
+                     ? "Processing Biometric..."
+                     : "Start Verification"
+               : mode === "attendance" && !isLivenessVerified
+                  ? isLivenessProcessing
+                     ? currentChallenge ? `Please ${currentChallenge}...` : "Processing Liveness..."
+                     : "Starting Liveness..."
+                  : attendanceButtonLabel;
 
    const handleMobileAction =
       () => {
-         if (
-            !isFaceVerified
-         ) {
-            onVerifyFace();
+         if (isAttendanceReady) {
+            onAttendance();
             return;
          }
 
-         if (
-            mode === "attendance" &&
-            !isLivenessVerified
-         ) {
-            onVerifyLiveness();
-            return;
+         if (!isFaceVerified && !isAutoVerifying) {
+            onStartVerification();
          }
-
-         onAttendance();
       };
 
    const isMobileButtonDisabled =
       isFaceProcessing ||
+      isAutoVerifying ||
       isLivenessProcessing ||
       isSubmittingAttendance ||
       (
@@ -120,6 +118,8 @@ export const ValidationStatus = ({
          ) &&
          !isAttendanceReady
       );
+
+   const isVerificationRunning = isAutoVerifying || isLivenessProcessing;
 
    return (
       <div className="flex h-full flex-col gap-3 xl:gap-5">
@@ -146,7 +146,9 @@ export const ValidationStatus = ({
                         <PendingBadge>
                            {isFaceProcessing
                               ? "Processing"
-                              : "Pending"}
+                              : isAutoVerifying
+                                 ? "Scanning..."
+                                 : "Pending"}
                         </PendingBadge>
                      )}
                   </div>
@@ -201,44 +203,63 @@ export const ValidationStatus = ({
             </div>
          </div>
 
-         <button
-            type="button"
-            onClick={handleMobileAction}
-
-            disabled={isMobileButtonDisabled}
-
-            className="hidden h-26 cursor-pointer items-center justify-center gap-4 rounded-md bg-(--pertama) px-6 text-2xl font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50 xl:flex"
-         >
-            {isFaceProcessing || isLivenessProcessing || isSubmittingAttendance ? (
-               <Loader2 size={28} className="animate-spin" />
-            ) : (
-               <CheckSquare size={28} />
-            )}
-
-            {mobileButtonLabel}
-         </button>
-
-         <div className="flex gap-3 xl:hidden">
-            <button
-               type="button"
-               onClick={onSwitchCamera}
-               className="flex h-16 w-16 shrink-0 cursor-pointer items-center justify-center rounded-md bg-(--pertama) text-white shadow-md transition-colors hover:bg-slate-700 active:scale-95"
-            >
-               <RefreshCcw size={26} />
-            </button>
+         <div className="hidden xl:flex flex-col gap-3">
             <button
                type="button"
                onClick={handleMobileAction}
                disabled={isMobileButtonDisabled}
-               className="flex h-16 min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 rounded-md bg-(--pertama) px-2 sm:px-6 text-sm sm:text-lg font-semibold whitespace-nowrap text-white shadow-md transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50 active:scale-95"
+               className="flex h-26 cursor-pointer items-center justify-center gap-4 rounded-md bg-(--pertama) px-6 text-2xl font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
-               {isFaceProcessing || isLivenessProcessing || isSubmittingAttendance ? (
-                  <Loader2 size={22} className="animate-spin shrink-0" />
+               {isFaceProcessing || isAutoVerifying || isLivenessProcessing || isSubmittingAttendance ? (
+                  <Loader2 size={28} className="animate-spin" />
                ) : (
-                  <CheckSquare size={22} className="shrink-0" />
+                  <CheckSquare size={28} />
                )}
-               <span className="truncate">{mobileButtonLabel}</span>
+               {mobileButtonLabel}
             </button>
+            {isVerificationRunning && (
+               <button
+                  type="button"
+                  onClick={onStopVerification}
+                  className="flex h-14 cursor-pointer items-center justify-center gap-2 rounded-md bg-red-100 text-red-600 font-semibold hover:bg-red-200 transition-colors"
+               >
+                  Stop Verification
+               </button>
+            )}
+         </div>
+
+         <div className="flex flex-col gap-3 xl:hidden">
+            <div className="flex gap-3">
+               <button
+                  type="button"
+                  onClick={onSwitchCamera}
+                  className="flex h-16 w-16 shrink-0 cursor-pointer items-center justify-center rounded-md bg-(--pertama) text-white shadow-md transition-colors hover:bg-slate-700 active:scale-95"
+               >
+                  <RefreshCcw size={26} />
+               </button>
+               <button
+                  type="button"
+                  onClick={handleMobileAction}
+                  disabled={isMobileButtonDisabled}
+                  className="flex h-16 min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 rounded-md bg-(--pertama) px-2 sm:px-6 text-sm sm:text-lg font-semibold whitespace-nowrap text-white shadow-md transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50 active:scale-95"
+               >
+                  {isFaceProcessing || isAutoVerifying || isLivenessProcessing || isSubmittingAttendance ? (
+                     <Loader2 size={22} className="animate-spin shrink-0" />
+                  ) : (
+                     <CheckSquare size={22} className="shrink-0" />
+                  )}
+                  <span className="truncate">{mobileButtonLabel}</span>
+               </button>
+            </div>
+            {isVerificationRunning && (
+               <button
+                  type="button"
+                  onClick={onStopVerification}
+                  className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-red-100 text-red-600 font-semibold hover:bg-red-200 transition-colors"
+               >
+                  Stop Verification
+               </button>
+            )}
          </div>
       </div>
    );

@@ -90,7 +90,11 @@ const LoginPage = () => {
                               type="email"
                               placeholder="example@gmail.com"
                               className="h-9"
-                              {...register("email")}
+                              {...register("email", {
+                                 onChange: (e) => {
+                                    e.target.value = e.target.value.replace(/[\s\u200B-\u200D\uFEFF]/g, "");
+                                 },
+                              })}
                            />
                            {errors.email && (
                               <p className="text-sm text-red-500">

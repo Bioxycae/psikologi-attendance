@@ -30,13 +30,25 @@ const TimeInput = ({ control, name, max, label }: { control: Control<any>, name:
             <input
                type="text"
                inputMode="numeric"
-               maxLength={2}
                value={String(field.value ?? 0).padStart(2, "0")}
                onChange={(e) => {
-                  const val = e.target.value.replace(/\D/g, "");
+                  let val = e.target.value.replace(/\D/g, "");
+                  
+                  if (val === "") {
+                     field.onChange(0);
+                     return;
+                  }
+
+                  // Allow continuous typing by keeping the last two digits
+                  if (val.length > 2) {
+                     val = val.slice(-2);
+                  }
+
                   let num = parseInt(val, 10);
                   if (isNaN(num)) num = 0;
+                  if (num < 0) num = 0;
                   if (num > max) num = max;
+                  
                   field.onChange(num);
                }}
                onBlur={() => field.onBlur()}

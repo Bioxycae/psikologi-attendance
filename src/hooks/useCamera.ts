@@ -144,7 +144,11 @@ export const useCamera =
                   videoRef.current.srcObject =
                      stream;
 
-                  await videoRef.current.play();
+                  await videoRef.current.play().catch(e => {
+                     if (e.name !== "AbortError") {
+                        console.error("Video play failed:", e);
+                     }
+                  });
                }
 
                setIsCameraOpened(

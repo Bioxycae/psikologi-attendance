@@ -203,6 +203,13 @@ export const useLivenessVerification = (
          );
       };
 
+   const stopLivenessVerification = () => {
+      setIsLivenessProcessing(false);
+      setIsLivenessVerified(false);
+      setCompletedChallenges([]);
+      setCurrentChallengeIndex(0);
+   };
+
    useEffect(() => {
       let isSubscribed = true;
       let timeoutId: NodeJS.Timeout;
@@ -249,5 +256,6 @@ export const useLivenessVerification = (
       setCurrentChallengeIndex,
 
       handleVerifyLiveness,
+      stopLivenessVerification,
    };
 };

@@ -72,7 +72,14 @@ const ValidatePage = () => {
    // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [location.isLocationPassed]);
 
-   const handleVerifyFace =
+   useEffect(() => {
+      if (face.isFaceVerified && isAttendanceMode && !liveness.isLivenessProcessing && !liveness.isLivenessVerified) {
+         liveness.handleVerifyLiveness();
+      }
+   // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [face.isFaceVerified, isAttendanceMode]);
+
+   const handleStartVerification =
       async () => {
          if (
             !location.isLocationPassed
@@ -94,33 +101,15 @@ const ValidatePage = () => {
             return;
          }
 
-         await face.handleVerifyFace();
+         await face.startAutoVerification();
       };
 
-   const handleVerifyLiveness =
-      async () => {
-         if (
-            !camera.isCameraOpened
-         ) {
-            toast.error(
-               "Open camera first"
-            );
-
-            return;
-         }
-
-         if (
-            !face.isFaceVerified
-         ) {
-            toast.error(
-               "Verify face first"
-            );
-
-            return;
-         }
-
-         await liveness.handleVerifyLiveness();
-      };
+   const handleStopVerification = () => {
+      face.stopAutoVerification();
+      face.resetFaceVerification();
+      liveness.stopLivenessVerification();
+      camera.handleCloseCamera();
+   };
 
    const handleSwitchCamera = () => {
       if (camera.cameraDevices.length <= 1) return;
@@ -250,8 +239,17 @@ const ValidatePage = () => {
             )}
 
          {!location.isLocationPassed ? (
-            <div className="flex min-h-34 items-center justify-center rounded-xl border border-(--pertama) px-8 lg:min-h-34">
-               <h2 className="text-center text-lg font-semibold leading-8 text-(--pertama) lg:text-3xl">
+            <div className="flex min-h-34 flex-col items-center justify-center gap-6 rounded-xl border border-(--pertama) px-6 py-8 lg:min-h-34">
+               <div className="max-w-2xl rounded-xl border border-amber-200 bg-amber-50 px-5 py-6 text-center">
+                  <h3 className="text-3xl font-bold text-amber-700">
+                     Smartphone Recommended
+                  </h3>
+                  <p className="mt-3 text-base font-medium text-amber-600 lg:text-lg">
+                     GPS accuracy is highly optimized on smartphones. Location detection via PC/Laptop may be inaccurate.
+                  </p>
+               </div>
+
+               <h2 className="text-center text-lg font-semibold leading-8 text-(--pertama) lg:text-2xl">
                   Verify your location first via the <span className="font-bold">top menu</span>, then open the camera.
                </h2>
             </div>
@@ -331,8 +329,16 @@ const ValidatePage = () => {
                         face.isFaceProcessing
                      }
 
-                     onVerifyFace={
-                        handleVerifyFace
+                     isAutoVerifying={
+                        face.isAutoVerifying
+                     }
+
+                     onStartVerification={
+                        handleStartVerification
+                     }
+
+                     onStopVerification={
+                        handleStopVerification
                      }
 
                      currentChallenge={
@@ -349,10 +355,6 @@ const ValidatePage = () => {
 
                      isLivenessProcessing={
                         liveness.isLivenessProcessing
-                     }
-
-                     onVerifyLiveness={
-                        handleVerifyLiveness
                      }
 
                      isAttendanceReady={
