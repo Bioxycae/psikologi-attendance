@@ -121,8 +121,8 @@ export const useLivenessVerification = (
                detection.descriptor,
                cachedFace.descriptor
             );
-            // 0.5 is our standard threshold for face match
-            if (distance > 0.5) {
+            // Increased threshold to 0.65 for liveness to tolerate extreme expressions
+            if (distance > 0.65) {
                toast.dismiss("liveness");
                toast.error(
                   "Face swapped during liveness check! Verification reset.",
