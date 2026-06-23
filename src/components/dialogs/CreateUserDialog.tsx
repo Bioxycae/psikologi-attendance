@@ -3,7 +3,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Dialog from "@radix-ui/react-dialog";
-import { ChevronDown, ImagePlus } from "lucide-react";
+import { ChevronDown, ImagePlus, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
@@ -26,6 +26,7 @@ export const CreateUserDialog = ({
 }: CreateUserDialogProps) => {
    const [previewImage, setPreviewImage] = useState<string | null>(null);
    const [isRoleMenuOpen, setIsRoleMenuOpen] = useState(false);
+   const [showPassword, setShowPassword] = useState(false);
 
    const {
       register,
@@ -159,12 +160,21 @@ export const CreateUserDialog = ({
 
                      <div className="flex flex-col gap-1.5">
                         <label className={labelClass}>Password</label>
-                        <input
-                           type="password"
-                           placeholder="Input password"
-                           {...register("password")}
-                           className={inputClass}
-                        />
+                        <div className="relative">
+                           <input
+                              type={showPassword ? "text" : "password"}
+                              placeholder="Input password"
+                              {...register("password")}
+                              className={`${inputClass} pr-10`}
+                           />
+                           <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-(--keenam) hover:text-(--pertama)"
+                           >
+                              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                           </button>
+                        </div>
                         {errors.password && (
                            <p className="text-xs text-red-500">{errors.password.message}</p>
                         )}
