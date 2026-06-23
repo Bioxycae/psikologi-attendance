@@ -228,20 +228,20 @@ export const ValidationStatus = ({
             )}
          </div>
 
-         <div className="flex flex-col gap-3 xl:hidden">
+         <div className="fixed bottom-6 left-1/2 z-40 flex w-11/12 -translate-x-1/2 flex-col gap-3 xl:static xl:w-auto xl:translate-x-0 xl:hidden">
             <div className="flex gap-3">
                <button
                   type="button"
                   onClick={onSwitchCamera}
-                  className="flex h-16 w-16 shrink-0 cursor-pointer items-center justify-center rounded-md bg-(--pertama) text-white shadow-md transition-colors hover:bg-slate-700 active:scale-95"
+                  className="flex h-14 w-14 sm:h-16 sm:w-16 shrink-0 cursor-pointer items-center justify-center rounded-md bg-(--pertama) text-white shadow-[0_4px_14px_rgba(0,0,0,0.25)] transition-colors hover:bg-slate-700 active:scale-95"
                >
-                  <RefreshCcw size={26} />
+                  <RefreshCcw size={24} className="sm:w-[26px] sm:h-[26px]" />
                </button>
                <button
                   type="button"
                   onClick={handleMobileAction}
                   disabled={isMobileButtonDisabled}
-                  className="flex h-16 min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 rounded-md bg-(--pertama) px-2 sm:px-6 text-sm sm:text-lg font-semibold whitespace-nowrap text-white shadow-md transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50 active:scale-95"
+                  className="flex h-14 sm:h-16 min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 rounded-md bg-(--pertama) px-2 sm:px-6 text-sm sm:text-lg font-semibold whitespace-nowrap text-white shadow-[0_4px_14px_rgba(0,0,0,0.25)] transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50 active:scale-95"
                >
                   {isFaceProcessing || isAutoVerifying || isLivenessProcessing || isSubmittingAttendance ? (
                      <Loader2 size={22} className="animate-spin shrink-0" />
@@ -255,7 +255,7 @@ export const ValidationStatus = ({
                <button
                   type="button"
                   onClick={onStopVerification}
-                  className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-red-100 text-red-600 font-semibold hover:bg-red-200 transition-colors"
+                  className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-red-100 text-red-600 font-semibold shadow-[0_4px_14px_rgba(0,0,0,0.15)] hover:bg-red-200 transition-colors"
                >
                   Stop Verification
                </button>

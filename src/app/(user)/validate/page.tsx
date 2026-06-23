@@ -133,7 +133,7 @@ const ValidatePage = () => {
    }
 
    return (
-      <div className="flex min-h-full flex-col gap-5 lg:h-full lg:gap-6">
+      <div className="flex min-h-full flex-col gap-5 pb-32 lg:h-full lg:gap-6 lg:pb-0">
          <div className={`shrink-0 rounded-xl border border-(--pertama) ${location.isLocationPassed ? "p-4 lg:px-6 lg:py-3" : "p-4 lg:px-8 lg:py-4"}`}>
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                <div className={location.isLocationPassed ? "hidden lg:block" : "block"}>

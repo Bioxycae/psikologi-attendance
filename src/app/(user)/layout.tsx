@@ -1,5 +1,8 @@
+"use client";
+
 import { MobileHeader } from "@/components/layouts/MobileHeader";
 import { NavItem } from "@/components/layouts/NavItem";
+import { usePathname } from "next/navigation";
 import { Sidebar } from "@/components/layouts/Sidebar";
 import { History, LayoutDashboard, ScanFace } from "lucide-react";
 import { ReactNode } from "react";
@@ -11,6 +14,9 @@ type UserLayoutProps = {
 const UserLayout = ({
    children,
 }: UserLayoutProps) => {
+   const pathname = usePathname();
+   const isValidatePage = pathname === "/validate";
+
    return (
       <div className="flex h-screen">
          <Sidebar>
@@ -43,7 +49,7 @@ const UserLayout = ({
                {children}
             </main>
 
-            <footer className="border-t border-(--pertama) py-6 text-center text-xs text-(--pertama)">
+            <footer className={`border-t border-(--pertama) py-6 text-center text-xs text-(--pertama) ${isValidatePage ? "hidden lg:block" : ""}`}>
                Copyright Daniel
             </footer>
          </div>
