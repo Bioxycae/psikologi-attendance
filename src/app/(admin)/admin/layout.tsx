@@ -12,7 +12,7 @@ const AdminLayout = ({
    children,
 }: AdminLayoutProps) => {
    return (
-      <div className="flex min-h-screen">
+      <div className="flex h-screen">
          <Sidebar>
             <div className="flex flex-col gap-3">
                <NavItem

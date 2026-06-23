@@ -11,8 +11,9 @@ import {
    FileSearch,
    ScanFace,
    ShieldCheck,
+   Loader2,
 } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { SessionDetailDialog } from "@/components/dialogs/SessionDetailDialog";
 import {
@@ -39,7 +40,9 @@ type UserResponse = {
 };
 
 const DashboardPage = () => {
+   const router = useRouter();
    const { todayAttendance, getAttendanceMode } = useAttendance();
+   const [isNavigating, setIsNavigating] = useState(false);
    const attendanceMode = getAttendanceMode(todayAttendance);
 
    const [
@@ -301,13 +304,17 @@ const DashboardPage = () => {
                        {getButtonText()}
                     </button>
                  ) : (
-                     <Link
-                        href="/validate"
-                        className="hidden h-26 w-full max-w-sm cursor-pointer flex-col items-center justify-center gap-3 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors duration-300 px-6 text-base font-semibold text-white shadow-md lg:flex"
+                     <button
+                        onClick={() => {
+                           setIsNavigating(true);
+                           router.push("/validate");
+                        }}
+                        disabled={isNavigating}
+                        className="hidden h-26 w-full max-w-sm cursor-pointer flex-col items-center justify-center gap-3 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors duration-300 px-6 text-base font-semibold text-white shadow-md lg:flex disabled:opacity-70 disabled:cursor-not-allowed"
                      >
-                       <ScanFace size={28} />
-                       {getButtonText()}
-                    </Link>
+                       {isNavigating ? <Loader2 size={28} className="animate-spin" /> : <ScanFace size={28} />}
+                       {isNavigating ? "Loading..." : getButtonText()}
+                    </button>
                  )}
             </div>
          </div>
@@ -437,13 +444,17 @@ const DashboardPage = () => {
                <ScanFace size={20} />
             </button>
          ) : (
-             <Link
-                href="/validate"
-                className="fixed bottom-20 left-1/2 z-40 flex h-12 w-11/12 -translate-x-1/2 cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors duration-300 px-4 text-sm font-semibold text-white shadow-lg whitespace-nowrap lg:hidden"
+             <button
+                onClick={() => {
+                   setIsNavigating(true);
+                   router.push("/validate");
+                }}
+                disabled={isNavigating}
+                className="fixed bottom-20 left-1/2 z-40 flex h-12 w-11/12 -translate-x-1/2 cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors duration-300 px-4 text-sm font-semibold text-white shadow-lg whitespace-nowrap lg:hidden disabled:opacity-70 disabled:cursor-not-allowed"
              >
-               {getButtonText()}
-               <ScanFace size={20} />
-            </Link>
+               {isNavigating ? "Loading..." : getButtonText()}
+               {isNavigating ? <Loader2 size={20} className="animate-spin" /> : <ScanFace size={20} />}
+            </button>
          )}
 
          {selectedSession && (
