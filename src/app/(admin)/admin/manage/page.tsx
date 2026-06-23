@@ -143,16 +143,16 @@ const ManagePage = () => {
             {settings && (
                <>
                   <div className="min-w-75 snap-center shrink-0 rounded-xl border border-(--pertama) bg-(--kesembilan) p-6 lg:min-w-0">
-                     <div className="flex items-start justify-between">
-                        <div>
+                     <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0 flex-1">
                            <p className="text-xs font-medium text-(--keenam)">Attendance Settings</p>
                            <h2 className="mt-2 text-xl font-bold text-(--pertama)">Dynamic Location</h2>
                            <div className="mt-4 flex flex-col gap-2">
-                              <div className="flex items-center gap-3 rounded-lg bg-(--pertama)/5 px-3 py-2.5">
+                              <div className="flex items-center gap-3 rounded-lg bg-(--pertama)/5 pl-3 pr-4 py-2.5">
                                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600 shrink-0">
                                     <MapPin size={16} />
                                  </div>
-                                 <div className="min-w-0">
+                                 <div className="min-w-0 flex-1">
                                     <p className="text-[11px] font-medium uppercase tracking-wider text-(--keenam)">Coordinates</p>
                                     <p className="truncate text-sm font-semibold text-(--pertama)">
                                        {settings.latitude}, {settings.longitude}
@@ -185,8 +185,8 @@ const ManagePage = () => {
                   </div>
 
                   <div className="min-w-75 snap-center shrink-0 rounded-xl border border-(--pertama) bg-(--kesembilan) p-6 lg:min-w-0">
-                     <div className="flex items-start justify-between">
-                        <div>
+                     <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0 flex-1">
                            <p className="text-xs font-medium text-(--keenam)">Attendance Settings</p>
                            <h2 className="mt-2 text-xl font-bold text-(--pertama)">Time Configuration</h2>
                            <div className="mt-4 flex flex-col gap-2">
