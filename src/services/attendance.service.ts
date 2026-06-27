@@ -9,7 +9,6 @@ type CreateAttendancePayload = {
    location_name: string;
    face_verified: boolean;
    liveness_verified: boolean;
-   status: string;
 };
 
 type UpdateCheckpointPayload = {
@@ -160,7 +159,6 @@ export const createAttendance =
       location_name,
       face_verified,
       liveness_verified,
-      status,
    }: CreateAttendancePayload) => {
       const supabase =
          createServerSupabase();
@@ -183,7 +181,6 @@ export const createAttendance =
             location_name,
             face_verified,
             liveness_verified,
-            status,
             attendance_time:
                normalizeCheckInTime(
                   settings?.attendance_time_hour ?? 7,

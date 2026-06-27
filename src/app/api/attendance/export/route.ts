@@ -57,6 +57,16 @@ export async function GET(request: Request) {
             });
          };
 
+         const getSessionStatus = () => {
+            if (record.checkout_time !== null && record.checkpoint_time !== null) {
+               return "Completed";
+            }
+            if (record.checkout_time !== null && record.checkpoint_time === null) {
+               return "Incomplete";
+            }
+            return "Missed Checkout";
+         };
+
          return [
             index + 1,
             `"${record.user_name || ""}"`,
@@ -69,7 +79,7 @@ export async function GET(request: Request) {
             record.latitude || "-",
             record.longitude || "-",
             `"${record.location_name || ""}"`,
-            record.status || "-",
+            getSessionStatus(),
          ].join(",");
       });
 

@@ -4,10 +4,9 @@ import { getAttendanceHistory } from "@/services/attendance.service";
 import { z } from "zod";
 
 const updateSchema = z.object({
-   status: z.string().optional(),
    attendance_time: z.string().optional().nullable(),
    checkpoint_time: z.string().nullable().optional(),
-   checkout_time: z.string().nullable().optional(),
+   checkout_time: z.string().optional().nullable(),
 });
 
 export async function GET(request: Request) {
@@ -59,12 +58,23 @@ export async function PUT(request: Request) {
          });
       }
 
+      const {
+         attendance_time,
+         checkpoint_time,
+         checkout_time,
+      } = parsed.data;
+
+      const updatePayload: Record<string, any> = {};
+      if (attendance_time !== undefined) updatePayload.attendance_time = attendance_time;
+      if (checkpoint_time !== undefined) updatePayload.checkpoint_time = checkpoint_time;
+      if (checkout_time !== undefined) updatePayload.checkout_time = checkout_time;
+
       const supabase = createServerSupabase();
 
       const { data, error } = await supabase
          .from("attendance")
          .update({
-            ...parsed.data,
+            ...updatePayload,
             updated_at: new Date().toISOString(),
          })
          .eq("id", id)

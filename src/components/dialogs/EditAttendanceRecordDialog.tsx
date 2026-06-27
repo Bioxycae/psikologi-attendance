@@ -6,12 +6,9 @@ import { CalendarClock, CalendarIcon } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import { PRESENSI_STATUS } from "@/constants/presensi.constant";
-
 import type { Presensi } from "@/types/database.type";
 
 type UpdateAttendancePayload = {
-   status: string;
    attendance_time: string;
    checkpoint_time: string | null;
    checkout_time: string | null;
@@ -57,7 +54,6 @@ export const EditAttendanceRecordDialog = ({
       if (!record) return;
       
       reset({
-         status: record.status || PRESENSI_STATUS.HADIR,
          attendance_time: toDateObject(record.attendance_time),
          checkpoint_time: toDateObject(record.checkpoint_time),
          checkout_time: toDateObject(record.checkout_time),
@@ -69,7 +65,6 @@ export const EditAttendanceRecordDialog = ({
 
       try {
          const payload = {
-            status: data.status,
             attendance_time: fromDateObject(data.attendance_time),
             checkpoint_time: fromDateObject(data.checkpoint_time),
             checkout_time: fromDateObject(data.checkout_time),

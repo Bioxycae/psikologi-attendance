@@ -1,5 +1,4 @@
 import type { UserRole } from "./auth.type";
-import { PresensiStatus } from "./presensi.type";
 
 export type User = {
    id: string;
@@ -20,7 +19,6 @@ export type Presensi = {
    face_verified: boolean;
    liveness_verified: boolean;
    qr_code: string;
-   status: PresensiStatus;
    created_at: string;
 };
 

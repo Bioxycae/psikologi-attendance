@@ -102,8 +102,6 @@ export const POST = async (
             location_name,
             face_verified,
             liveness_verified,
-            status:
-               "present",
          });
 
       return NextResponse.json({
