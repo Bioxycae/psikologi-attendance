@@ -4,9 +4,8 @@ export type AttendanceSession = {
    id: string;
    user_name: string;
    attendance_time: string;
+   checkpoint_time: string | null;
    checkout_time: string | null;
-   checkpoint_verified: boolean;
-   checkout_verified: boolean;
 };
 
 type SessionCardProps = {
@@ -25,8 +24,8 @@ export const SessionCard = ({
    const getSessionStatus =
       () => {
          if (
-            session.checkout_verified &&
-            session.checkpoint_verified
+            session.checkout_time !== null &&
+            session.checkpoint_time !== null
          ) {
             return {
                label: "Completed",
@@ -36,8 +35,8 @@ export const SessionCard = ({
          }
 
          if (
-            session.checkout_verified &&
-            !session.checkpoint_verified
+            session.checkout_time !== null &&
+            session.checkpoint_time === null
          ) {
             return {
                label: "Incomplete",

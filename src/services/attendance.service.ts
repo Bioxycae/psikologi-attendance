@@ -191,10 +191,6 @@ export const createAttendance =
                ),
             updated_at:
                new Date().toISOString(),
-            checkpoint_verified:
-               false,
-            checkout_verified:
-               false,
          })
          .select()
          .single();
@@ -231,8 +227,6 @@ export const updateCheckpoint =
             location_name,
             checkpoint_time:
                new Date().toISOString(),
-            checkpoint_verified:
-               true,
             updated_at:
                new Date().toISOString(),
          })
@@ -281,8 +275,6 @@ export const checkoutAttendance =
                   settings?.checkout_time_hour ?? 16,
                   settings?.checkout_time_minute ?? 30
                ),
-            checkout_verified:
-               true,
             updated_at:
                new Date().toISOString(),
          })
@@ -472,13 +464,13 @@ export const getAdminDashboardOverview =
       const completedToday =
          sessions.filter(
             session =>
-               session.checkout_verified
+               session.checkout_time !== null
          ).length;
 
       const inProgressToday =
          sessions.filter(
             session =>
-               !session.checkout_verified
+               session.checkout_time === null
          ).length;
 
       return {

@@ -21,8 +21,7 @@ type AdminAttendanceSession = {
    user_name: string;
    attendance_time: string;
    checkout_time: string | null;
-   checkpoint_verified: boolean;
-   checkout_verified: boolean;
+   checkpoint_time: string | null;
    location_name?: string;
 };
 
@@ -138,8 +137,8 @@ const AdminDashboardPage = () => {
             return matchesSearch;
          }
 
-         const isCompleted = session.checkout_verified && session.checkpoint_verified;
-         const isMissed = session.checkout_verified && !session.checkpoint_verified;
+         const isCompleted = session.checkout_time !== null && session.checkpoint_time !== null;
+         const isMissed = session.checkout_time !== null && session.checkpoint_time === null;
 
          const sessionStatusValue = isCompleted
             ? "completed"

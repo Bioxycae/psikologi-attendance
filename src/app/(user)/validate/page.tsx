@@ -7,6 +7,9 @@ import {
    ScanFace,
    Loader2,
    RefreshCcw,
+   CheckCircle,
+   XCircle,
+   Clock,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -109,6 +112,14 @@ const ValidatePage = () => {
          ) {
             toast.error(
                "Open camera first"
+            );
+
+            return;
+         }
+
+         if (!isModelLoaded) {
+            toast.error(
+               "AI Models are loading, please wait..."
             );
 
             return;
@@ -222,25 +233,28 @@ const ValidatePage = () => {
                      )}
                   </p>
 
-                  {attendance.todayAttendance.checkpoint_verified && (
-                     <p className="mt-1 text-sm text-amber-600">
-                        Midday checkpoint completed
-                     </p>
+                  {attendance.todayAttendance.checkpoint_time !== null && (
+                     <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">
+                        <CheckCircle size={14} />
+                        Checkpoint Completed
+                     </div>
                   )}
-
-                  {attendance.todayAttendance.checkout_verified &&
-                     attendance.todayAttendance.checkpoint_verified && (
-                        <p className="mt-1 text-sm text-emerald-600">
-                           Session completed
-                        </p>
-                     )}
-
-                  {attendance.todayAttendance.checkout_verified &&
-                     !attendance.todayAttendance.checkpoint_verified && (
-                        <p className="mt-1 text-sm text-amber-600">
-                           Checkpoint missed
-                        </p>
-                     )}
+                  {attendance.todayAttendance.checkpoint_time === null && (
+                     attendance.todayAttendance.checkout_time !== null && (
+                        <div className="inline-flex items-center gap-1.5 rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700">
+                           <XCircle size={14} />
+                           Checkpoint Missed
+                        </div>
+                     )
+                  )}
+                  {attendance.todayAttendance.checkpoint_time === null && (
+                     attendance.todayAttendance.checkout_time === null && (
+                        <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-700">
+                           <Clock size={14} />
+                           Waiting for Checkpoint
+                        </div>
+                     )
+                  )}
                </div>
             )}
 

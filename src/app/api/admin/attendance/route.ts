@@ -4,10 +4,8 @@ import { getAttendanceHistory } from "@/services/attendance.service";
 import { z } from "zod";
 
 const updateSchema = z.object({
-   status: z.string(),
-   checkpoint_verified: z.boolean(),
-   checkout_verified: z.boolean(),
-   attendance_time: z.string(),
+   status: z.string().optional(),
+   attendance_time: z.string().optional().nullable(),
    checkpoint_time: z.string().nullable().optional(),
    checkout_time: z.string().nullable().optional(),
 });

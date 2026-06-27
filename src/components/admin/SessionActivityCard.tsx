@@ -3,8 +3,7 @@ type AdminAttendanceSession = {
    user_name: string;
    attendance_time: string;
    checkout_time: string | null;
-   checkpoint_verified: boolean;
-   checkout_verified: boolean;
+   checkpoint_time: string | null;
    location_name?: string;
 };
 
@@ -19,8 +18,8 @@ export const SessionActivityCard = ({
 }: SessionActivityCardProps) => {
    const getSessionStatus = () => {
       if (
-         session.checkout_verified &&
-         session.checkpoint_verified
+         session.checkout_time !== null &&
+         session.checkpoint_time !== null
       ) {
          return {
             label: "Completed",
@@ -29,8 +28,8 @@ export const SessionActivityCard = ({
       }
 
       if (
-         session.checkout_verified &&
-         !session.checkpoint_verified
+         session.checkout_time !== null &&
+         session.checkpoint_time === null
       ) {
          return {
             label: "Incomplete",

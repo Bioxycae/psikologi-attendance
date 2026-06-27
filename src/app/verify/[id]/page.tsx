@@ -18,9 +18,8 @@ type AttendanceSession = {
    id: number;
    user_name: string;
    attendance_time: string;
+   checkpoint_time: string | null;
    checkout_time: string | null;
-   checkpoint_verified: boolean;
-   checkout_verified: boolean;
    location_name: string;
    face_verified: boolean;
    liveness_verified: boolean;
@@ -165,8 +164,12 @@ const VerifyPage = () => {
 
                         <div className="flex items-center justify-between border-b border-(--kedua)/10 pb-3">
                            <span className="font-medium text-(--kedua)/70">Checkpoint Status</span>
-                           <span className="font-semibold">
-                              {session.checkpoint_verified ? "Completed" : "Missed"}
+                           <span
+                              className={`text-sm font-semibold ${
+                                 session.checkpoint_time !== null ? "text-emerald-600" : "text-amber-600"
+                              }`}
+                           >
+                              {session.checkpoint_time !== null ? "Completed" : "Missed"}
                            </span>
                         </div>
 

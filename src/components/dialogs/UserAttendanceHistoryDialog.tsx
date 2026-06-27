@@ -121,8 +121,8 @@ export const UserAttendanceHistoryDialog = ({
                      ) : (
                         history.map((record) => {
                            const date = new Date((record as any).attendance_time);
-                           const isCheckpoint = (record as any).checkpoint_verified;
-                           const isCheckout = (record as any).checkout_verified;
+                           const isCheckpoint = (record as any).checkpoint_time !== null;
+                           const isCheckout = (record as any).checkout_time !== null;
                            
                            let statusLabel = "Missed Checkout";
                            let statusColor = "bg-red-100 text-red-700";

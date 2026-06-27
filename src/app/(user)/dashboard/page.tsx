@@ -219,7 +219,13 @@ const DashboardPage = () => {
    const pendingValidation =
       attendanceData.filter(
          session =>
-            !session.checkout_verified
+            session.checkout_time !== null
+      ).length;
+
+   const inProgressToday =
+      attendanceData.filter(
+         session =>
+            session.checkout_time === null
       ).length;
 
    const handleLoadMore =

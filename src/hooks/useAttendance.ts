@@ -194,13 +194,12 @@ export const useAttendance =
                return "attendance";
             }
 
-            if (attendance.checkout_verified) {
+            if (attendance.checkout_time !== null) {
                return "completed";
             }
 
-            if (!attendance.checkpoint_verified) {
-               const checkpointStatus =
-                  getCheckpointStatus();
+            if (attendance.checkpoint_time === null) {
+               const checkpointStatus = getCheckpointStatus();
 
                if (checkpointStatus === "locked") {
                   return "checkpoint_locked";

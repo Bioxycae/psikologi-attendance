@@ -200,8 +200,8 @@ const HistoryPage =
                         "completed"
                      ) {
                         return (
-                           session.checkout_verified &&
-                           session.checkpoint_verified
+                           session.checkout_time !== null &&
+                           session.checkpoint_time !== null
                         );
                      }
 
@@ -210,16 +210,13 @@ const HistoryPage =
                         "checkpoint_missed"
                      ) {
                         return (
-                           session.checkout_verified &&
-                           !session.checkpoint_verified
+                           session.checkout_time !== null &&
+                           session.checkpoint_time === null
                         );
                      }
 
-                     if (
-                        selectedFilter ===
-                        "in_progress"
-                     ) {
-                        return !session.checkout_verified;
+                     if (selectedFilter === "in_progress") {
+                        return session.checkout_time === null;
                      }
 
                      return true;
@@ -366,15 +363,15 @@ const HistoryPage =
             session: AttendanceSession
          ) => {
             if (
-               session.checkout_verified &&
-               session.checkpoint_verified
+               session.checkout_time !== null &&
+               session.checkpoint_time !== null
             ) {
                return "Completed";
             }
 
             if (
-               session.checkout_verified &&
-               !session.checkpoint_verified
+               session.checkout_time !== null &&
+               session.checkpoint_time === null
             ) {
                return "Incomplete";
             }
