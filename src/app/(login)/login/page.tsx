@@ -112,7 +112,7 @@ const LoginPage = () => {
                               <Input
                                  type={isPasswordVisible ? "text" : "password"}
                                  placeholder="**********"
-                                 className="h-9 pr-12"
+                                 className="h-12 pr-12"
                                  {...register("password")}
                               />
                               {errors.password && (
@@ -126,7 +126,8 @@ const LoginPage = () => {
                                  onClick={() =>
                                     setIsPasswordVisible(!isPasswordVisible)
                                  }
-                                 className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer"
+                                 className="absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer p-2"
+                                 aria-label={isPasswordVisible ? "Hide password" : "Show password"}
                               >
                                  {isPasswordVisible ? (
                                     <Eye

@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
    output: "standalone",
+   productionBrowserSourceMaps: true,
    allowedDevOrigins: [
       "*.ngrok-free.app",
       "*.ngrok-free.dev",
@@ -39,7 +40,7 @@ const nextConfig: NextConfig = {
                },
                {
                   key: "Content-Security-Policy",
-                  value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://get.geojs.io https://ipapi.co https://nominatim.openstreetmap.org; frame-ancestors 'none';",
+                  value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://get.geojs.io https://ipapi.co https://nominatim.openstreetmap.org https://cloudflareinsights.com; frame-ancestors 'none';",
                },
             ],
          },
