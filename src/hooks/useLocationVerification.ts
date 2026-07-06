@@ -60,10 +60,12 @@ export const useLocationVerification =
                true
             );
 
-            const requestLocation = (attempt: number) => {
-               const options = attempt === 1 
-                  ? { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-                  : { enableHighAccuracy: false, timeout: 10000, maximumAge: Infinity };
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+            const requestLocation = () => {
+               const options = isMobile
+                  ? { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 }
+                  : { enableHighAccuracy: false, timeout: 4000, maximumAge: Infinity };
 
                navigator.geolocation.getCurrentPosition(
                   async position => {
@@ -164,12 +166,7 @@ export const useLocationVerification =
                   },
 
                   async (error) => {
-                     if (attempt === 1 && (error.code === error.TIMEOUT || error.code === error.POSITION_UNAVAILABLE)) {
-                        requestLocation(2);
-                        return;
-                     }
-
-                     if (error.code === error.TIMEOUT || error.code === error.POSITION_UNAVAILABLE) {
+                     if (error.code === error.TIMEOUT || error.code === error.POSITION_UNAVAILABLE || !isMobile) {
                         const validateIpLocation = async (lat: number, lon: number, city: string, country: string) => {
                            setCoordinates({ latitude: lat, longitude: lon });
                            const locName = `${city || "Unknown"}, ${country || "Unknown"}`;
@@ -235,7 +232,7 @@ export const useLocationVerification =
                );
             };
 
-            requestLocation(1);
+            requestLocation();
          };
 
       return {
