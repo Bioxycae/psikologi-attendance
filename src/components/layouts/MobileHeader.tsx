@@ -98,10 +98,10 @@ export const MobileHeader = ({
             <button
                type="button"
                onClick={() => setIsOpen(!isOpen)}
-               className="cursor-pointer text-(--pertama)"
+               className="cursor-pointer text-(--pertama) p-3 -mr-3"
                aria-label={isOpen ? "Close menu" : "Open menu"}
             >
-               {isOpen ? <X size={22} /> : <Menu size={22} />}
+               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
          </header>
 

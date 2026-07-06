@@ -16,8 +16,13 @@ import { toast } from "sonner";
 
 import { formatAttendanceDate } from "@/utils/formatDate";
 
-import { CameraSection } from "@/components/validate/CameraSection";
+import dynamic from "next/dynamic";
 import { ValidationStatus } from "@/components/validate/ValidationStatus";
+
+const CameraSection = dynamic(
+   () => import("@/components/validate/CameraSection").then((mod) => mod.CameraSection),
+   { ssr: false }
+);
 
 import { useAttendance } from "@/hooks/useAttendance";
 import { useCamera } from "@/hooks/useCamera";
