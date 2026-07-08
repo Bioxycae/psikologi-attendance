@@ -49,7 +49,7 @@ export const CameraSection = ({
                style={{
                   filter: "brightness(1.15) contrast(1.05)",
                }}
-               className={`absolute inset-0 h-full w-full object-cover ${
+               className={`absolute inset-0 h-full w-full object-cover scale-x-[-1] ${
                   !isCameraOpened
                      ? "opacity-0"
                      : "opacity-100"
