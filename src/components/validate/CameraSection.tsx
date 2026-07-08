@@ -48,8 +48,9 @@ export const CameraSection = ({
                muted
                style={{
                   filter: "brightness(1.15) contrast(1.05)",
+                  transform: "scaleX(-1)",
                }}
-               className={`absolute inset-0 h-full w-full object-cover scale-x-[-1] ${
+               className={`absolute inset-0 h-full w-full object-cover ${
                   !isCameraOpened
                      ? "opacity-0"
                      : "opacity-100"
