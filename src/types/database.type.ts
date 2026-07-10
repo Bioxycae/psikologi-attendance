@@ -8,6 +8,7 @@ export type User = {
    role: UserRole;
    image_url: string | null;
    image_public_id: string | null;
+   face_embedding: string | null;
    created_at: string;
 };
 

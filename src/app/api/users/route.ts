@@ -57,6 +57,7 @@ export async function POST(request: Request) {
          password: formData.get("password"),
          role: formData.get("role"),
          image,
+         face_embedding: formData.get("face_embedding"),
       });
 
       if (!validatedFields.success) {

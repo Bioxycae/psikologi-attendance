@@ -31,6 +31,11 @@ export const createUserSchema =
          .instanceof(File)
          .nullable()
          .optional(),
+
+      face_embedding: z
+         .string()
+         .nullable()
+         .optional(),
    });
 
 export const updateUserSchema =
@@ -62,6 +67,11 @@ export const updateUserSchema =
 
       image: z
          .instanceof(File)
+         .nullable()
+         .optional(),
+
+      face_embedding: z
+         .string()
          .nullable()
          .optional(),
    });

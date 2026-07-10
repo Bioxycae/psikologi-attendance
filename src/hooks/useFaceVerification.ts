@@ -34,8 +34,10 @@ export const useFaceVerification = (
    const [isAutoVerifying, setIsAutoVerifying] = useState(false);
    const [registeredDescriptor, setRegisteredDescriptor] = useState<Float32Array | null>(null);
    const [registeredUserName, setRegisteredUserName] = useState<string | null>(null);
+   const [faceStatusMessage, setFaceStatusMessage] = useState<string | null>(null);
 
    const stopAutoVerification = () => {
+      setFaceStatusMessage(null);
       setIsAutoVerifying(false);
       setIsFaceProcessing(false);
       toast.dismiss("face-scan");
@@ -70,19 +72,19 @@ export const useFaceVerification = (
          .withFaceDescriptor();
    };
 
-   const detectCurrentFace =
+   const detectCurrentFaces =
       async () => {
          if (!videoRef.current) {
             return null;
          }
 
          return await faceapi
-            .detectSingleFace(
+            .detectAllFaces(
                videoRef.current,
                new faceapi.TinyFaceDetectorOptions({ inputSize: 224 })
             )
             .withFaceLandmarks(true)
-            .withFaceDescriptor();
+            .withFaceDescriptors();
       };
 
    const startAutoVerification =
@@ -93,6 +95,7 @@ export const useFaceVerification = (
             setIsFaceVerified(false);
             setRegisteredDescriptor(null);
             setRegisteredUserName(null);
+            setFaceStatusMessage(null);
 
             toast.loading("Preparing face scan...", { id: "face-scan" });
 
@@ -132,6 +135,7 @@ export const useFaceVerification = (
       let isSubscribed = true;
       let timeoutId: NodeJS.Timeout;
       let isCurrentlyProcessing = false;
+      let lastValidTime: number | null = null;
 
       const runDetectionLoop = async () => {
          if (!isSubscribed || !isAutoVerifying || !registeredDescriptor) return;
@@ -143,18 +147,62 @@ export const useFaceVerification = (
          isCurrentlyProcessing = true;
 
          try {
-            const currentFace = await detectCurrentFace();
-            if (currentFace) {
-               const distance = faceapi.euclideanDistance(currentFace.descriptor, registeredDescriptor);
-               const isMatched = distance < 0.5;
+            const currentFaces = await detectCurrentFaces();
+            
+            if (!currentFaces || currentFaces.length === 0) {
+               setFaceStatusMessage("Wajah tidak terdeteksi.");
+               lastValidTime = null;
+            } else if (currentFaces.length > 1) {
+               setFaceStatusMessage("Terdeteksi lebih dari satu wajah. Pastikan hanya satu orang berada di kamera.");
+               lastValidTime = null;
+            } else {
+               const face = currentFaces[0];
+               const video = videoRef.current;
+               
+               if (video) {
+                  const box = face.detection.box;
+                  const videoWidth = video.videoWidth;
+                  const videoHeight = video.videoHeight;
+                  
+                  // Simple guide validation based on relative size and position
+                  const faceAreaRatio = (box.width * box.height) / (videoWidth * videoHeight);
+                  const faceCenterX = box.x + (box.width / 2);
+                  const faceCenterY = box.y + (box.height / 2);
+                  
+                  // Normalize centers (0 to 1)
+                  const normX = faceCenterX / videoWidth;
+                  const normY = faceCenterY / videoHeight;
 
-               if (isMatched && isSubscribed) {
-                  setMatchedUser(registeredUserName);
-                  setIsFaceVerified(true);
-                  setIsAutoVerifying(false);
-                  toast.success(`Matched with ${registeredUserName}`, { id: "face-scan" });
-                  isCurrentlyProcessing = false;
-                  return; // Stop the loop
+                  if (faceAreaRatio < 0.05) {
+                     setFaceStatusMessage("Dekatkan wajah ke kamera.");
+                     lastValidTime = null;
+                  } else if (faceAreaRatio > 0.4) {
+                     setFaceStatusMessage("Jauhkan wajah dari kamera.");
+                     lastValidTime = null;
+                  } else if (normX < 0.3 || normX > 0.7 || normY < 0.2 || normY > 0.8) {
+                     setFaceStatusMessage("Posisikan wajah di dalam area panduan.");
+                     lastValidTime = null;
+                  } else {
+                     setFaceStatusMessage("Pertahankan posisi wajah...");
+                     
+                     if (!lastValidTime) {
+                        lastValidTime = Date.now();
+                     } else if (Date.now() - lastValidTime > 500) {
+                        // 500ms stable, perform distance check
+                        const distance = faceapi.euclideanDistance(face.descriptor, registeredDescriptor);
+                        const isMatched = distance < 0.5;
+
+                        if (isMatched && isSubscribed) {
+                           setMatchedUser(registeredUserName);
+                           setIsFaceVerified(true);
+                           setIsAutoVerifying(false);
+                           setFaceStatusMessage(null);
+                           toast.success(`Matched with ${registeredUserName}`, { id: "face-scan" });
+                           isCurrentlyProcessing = false;
+                           return; // Stop the loop
+                        }
+                     }
+                  }
                }
             }
          } catch (error) {
@@ -183,6 +231,7 @@ export const useFaceVerification = (
       isFaceProcessing,
       matchedUser,
       isAutoVerifying,
+      faceStatusMessage,
 
       setIsFaceVerified,
       setMatchedUser,

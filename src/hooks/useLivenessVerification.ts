@@ -101,19 +101,31 @@ export const useLivenessVerification = (
             return;
          }
 
-         const detection =
+         const detections =
             await faceapi
-               .detectSingleFace(
+               .detectAllFaces(
                   videoRef.current,
                   new faceapi.TinyFaceDetectorOptions()
                )
                .withFaceLandmarks(true)
-               .withFaceDescriptor()
+               .withFaceDescriptors()
                .withFaceExpressions();
 
-         if (!isProcessingRef.current || !detection) {
+         if (!isProcessingRef.current || !detections || detections.length === 0) {
             return;
          }
+
+         if (detections.length > 1) {
+            toast.dismiss("liveness");
+            toast.error(
+               "Multiple faces detected during liveness check! Verification reset.",
+               { duration: 3500 }
+            );
+            if (onFraudDetected) onFraudDetected();
+            return;
+         }
+
+         const detection = detections[0];
 
          const cachedFace = getCachedFaceDescriptor();
          if (cachedFace && cachedFace.descriptor) {

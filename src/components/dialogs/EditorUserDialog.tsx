@@ -4,9 +4,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Dialog from "@radix-ui/react-dialog";
 import { ChevronDown, ImagePlus, Eye, EyeOff } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
+import * as faceapi from "face-api.js";
 
 import {
     updateUserSchema,
@@ -35,6 +36,8 @@ export const EditUserDialog = ({
    const [previewImage, setPreviewImage] = useState<string | null>(null);
    const [isRoleMenuOpen, setIsRoleMenuOpen] = useState(false);
    const [showPassword, setShowPassword] = useState(false);
+   const [faceEmbedding, setFaceEmbedding] = useState<string | null>(null);
+   const [isExtractingFace, setIsExtractingFace] = useState(false);
 
    const {
       register,
@@ -57,11 +60,45 @@ export const EditUserDialog = ({
       setPreviewImage(user.image_url || null);
    }, [user, setValue]);
 
-   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+   const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       if (!file) return;
+
+      const objUrl = URL.createObjectURL(file);
+      setPreviewImage(objUrl);
       setValue("image", file);
-      setPreviewImage(URL.createObjectURL(file));
+      setIsExtractingFace(true);
+      setFaceEmbedding(null);
+
+      try {
+         const img = new Image();
+         img.src = objUrl;
+         await new Promise((resolve) => (img.onload = resolve));
+
+         const detections = await faceapi
+            .detectAllFaces(img, new faceapi.TinyFaceDetectorOptions({ inputSize: 224 }))
+            .withFaceLandmarks(true)
+            .withFaceDescriptors();
+
+         if (detections.length === 0) {
+            toast.error("Wajah tidak terdeteksi pada gambar.");
+            setValue("image", undefined as any);
+            setPreviewImage(user?.image_url || null);
+         } else if (detections.length > 1) {
+            toast.error("Pastikan tepat satu wajah terdeteksi pada gambar.");
+            setValue("image", undefined as any);
+            setPreviewImage(user?.image_url || null);
+         } else {
+            const descriptor = Array.from(detections[0].descriptor);
+            setFaceEmbedding(JSON.stringify(descriptor));
+            toast.success("Face descriptor berhasil diekstrak.");
+         }
+      } catch (error) {
+         console.error("Face extraction error:", error);
+         toast.error("Gagal memproses wajah pada gambar.");
+      } finally {
+         setIsExtractingFace(false);
+      }
    };
 
    const handleUpdateUser = async (data: UpdateUserSchema) => {
@@ -74,6 +111,7 @@ export const EditUserDialog = ({
          if (data.password) formData.append("password", data.password);
          formData.append("role", data.role);
          if (data.image) formData.append("image", data.image);
+         if (faceEmbedding) formData.append("face_embedding", faceEmbedding);
 
          const response = await fetch(`/api/users/${user.id}`, {
             method: "PUT",
@@ -93,6 +131,7 @@ export const EditUserDialog = ({
             toast.success("New password copied successfully!");
          }
          reset();
+         setFaceEmbedding(null);
          onOpenChange(false);
          onSuccess();
       } catch (error) {
@@ -263,10 +302,10 @@ export const EditUserDialog = ({
 
                         <button
                            type="submit"
-                           disabled={isSubmitting}
+                           disabled={isSubmitting || isExtractingFace}
                            className="cursor-pointer rounded-md bg-(--pertama) px-5 py-2.5 text-sm font-medium text-white disabled:opacity-50"
                         >
-                           {isSubmitting ? "Updating..." : "Update User"}
+                           {isExtractingFace ? "Mengekstrak Wajah..." : isSubmitting ? "Updating..." : "Update User"}
                         </button>
                      </div>
                   </form>

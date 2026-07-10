@@ -43,26 +43,27 @@ export const preloadUserFaceDescriptor = async (): Promise<CachedDescriptor | nu
          const currentUserName = sessionResult.data?.name;
 
          const currentUserData = users.find(
-            (user: { name: string; image_url: string | null }) => user.name === currentUserName
+            (user: { name: string; face_embedding: string | null }) => user.name === currentUserName
          );
 
-         if (!currentUserData || !currentUserData.image_url) {
+         if (!currentUserData || !currentUserData.face_embedding) {
             return null;
          }
 
-         const image = await faceapi.fetchImage(currentUserData.image_url);
-         const detection = await faceapi
-            .detectSingleFace(image, new faceapi.TinyFaceDetectorOptions({ inputSize: 224 }))
-            .withFaceLandmarks(true)
-            .withFaceDescriptor();
-
-         if (!detection) {
+         // face_embedding format from Supabase is typically "[0.1, 0.2, ...]"
+         let parsedArray: number[];
+         try {
+            parsedArray = JSON.parse(currentUserData.face_embedding);
+         } catch (e) {
+            console.error("Failed to parse face embedding", e);
             return null;
          }
+
+         const descriptor = new Float32Array(parsedArray);
 
          cachedDescriptor = {
             userName: currentUserData.name,
-            descriptor: detection.descriptor,
+            descriptor,
          };
 
          return cachedDescriptor;

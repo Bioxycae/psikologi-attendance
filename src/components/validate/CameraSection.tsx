@@ -14,6 +14,7 @@ type CameraSectionProps = {
    isCameraLoading: boolean;
    isCameraOpened: boolean;
    isModelLoaded: boolean;
+   faceStatusMessage?: string | null;
 };
 
 export const CameraSection = ({
@@ -24,6 +25,7 @@ export const CameraSection = ({
    isCameraLoading,
    isCameraOpened,
    isModelLoaded,
+   faceStatusMessage,
 }: CameraSectionProps) => {
    const [
       isCameraMenuOpen,
@@ -56,6 +58,42 @@ export const CameraSection = ({
                      : "opacity-100"
                } transition-opacity duration-300`}
             />
+
+             {isCameraOpened && !isCameraLoading && isModelLoaded && (
+                <>
+                   <div className="absolute inset-0 z-10 pointer-events-none">
+                      <svg
+                         className="w-full h-full"
+                         viewBox="0 0 100 100"
+                         preserveAspectRatio="none"
+                      >
+                         <path
+                            d="M0,0 H100 V100 H0 Z M50,15 C25,15 15,35 15,50 C15,65 25,85 50,85 C75,85 85,65 85,50 C85,35 75,15 50,15 Z"
+                            fill="rgba(0,0,0,0.4)"
+                            fillRule="evenodd"
+                         />
+                         <ellipse
+                            cx="50"
+                            cy="50"
+                            rx="35"
+                            ry="35"
+                            fill="none"
+                            stroke="#ffffff"
+                            strokeWidth="0.5"
+                            strokeDasharray="2,2"
+                         />
+                      </svg>
+                   </div>
+
+                   {faceStatusMessage && (
+                      <div className="absolute bottom-8 left-0 right-0 z-20 flex justify-center px-4">
+                         <div className="rounded-full bg-black/70 px-5 py-2.5 text-center text-sm font-semibold text-white backdrop-blur-sm shadow-lg border border-white/20">
+                            {faceStatusMessage}
+                         </div>
+                      </div>
+                   )}
+                </>
+             )}
 
             {!isCameraOpened && (
                <div className="absolute inset-0 flex items-center justify-center bg-(--kedua)">

@@ -64,6 +64,11 @@ export async function PUT(
                ),
 
             image,
+
+            face_embedding:
+               formData.get(
+                  "face_embedding"
+               ),
          });
 
       if (

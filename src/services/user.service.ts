@@ -62,6 +62,7 @@ export const createUser =
       password,
       role,
       image,
+      face_embedding,
    }: CreateUserSchema): Promise<User> => {
       const supabase =
          createServerSupabase();
@@ -108,6 +109,8 @@ export const createUser =
                imageUrl,
             image_public_id:
                imagePublicId,
+            face_embedding:
+               face_embedding ? `[${face_embedding}]` : null,
          })
          .select()
          .single();
@@ -129,6 +132,7 @@ export const updateUser =
       password,
       role,
       image,
+      face_embedding,
    }: UpdateUserSchema & {
       id: string;
    }): Promise<User> => {
@@ -179,6 +183,10 @@ export const updateUser =
          image_public_id:
             imagePublicId,
       };
+
+      if (face_embedding) {
+         updatePayload.face_embedding = `[${face_embedding}]`;
+      }
 
       if (password && password.trim() !== "") {
          updatePayload.password = await bcrypt.hash(password, 12);

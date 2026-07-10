@@ -12,9 +12,10 @@ export async function GET() {
          .select(`
             id,
             name,
-            image_url
+            image_url,
+            face_embedding
          `)
-         .not("image_url", "is", null);
+         .not("face_embedding", "is", null);
 
       if (error) {
          return apiResponse({

@@ -309,6 +309,10 @@ const ValidatePage = () => {
                         camera.isCameraLoading
                      }
 
+                     faceStatusMessage={
+                        face.faceStatusMessage
+                     }
+
                      isCameraOpened={
                         camera.isCameraOpened
                      }
