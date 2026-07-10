@@ -110,7 +110,7 @@ export const createUser =
             image_public_id:
                imagePublicId,
             face_embedding:
-               face_embedding ? `[${face_embedding}]` : null,
+               face_embedding ? face_embedding : null,
          })
          .select()
          .single();
@@ -185,7 +185,7 @@ export const updateUser =
       };
 
       if (face_embedding) {
-         updatePayload.face_embedding = `[${face_embedding}]`;
+         updatePayload.face_embedding = face_embedding;
       }
 
       if (password && password.trim() !== "") {
