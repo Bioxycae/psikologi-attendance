@@ -1,5 +1,5 @@
 services:
-  labpsycho3:
+  labpsycho4:
     container_name: labpsycho3
     build:
       context: .
