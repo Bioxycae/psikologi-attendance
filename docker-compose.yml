@@ -1,5 +1,5 @@
 services:
-  psytrack:
+  labpsycho:
     container_name: labpsycho
     build:
       context: .
