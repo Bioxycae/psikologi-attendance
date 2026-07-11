@@ -1,6 +1,6 @@
 services:
   psytrack:
-    container_name: psytrack
+    container_name: labpsycho
     build:
       context: .
     restart: always
