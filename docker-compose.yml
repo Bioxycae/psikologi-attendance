@@ -1,6 +1,6 @@
 services:
   labpsycho7:
-    container_name: labpsycho7
+    container_name: psikologi-app
     build:
       context: .
     restart: always
