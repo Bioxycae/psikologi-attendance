@@ -1,5 +1,5 @@
 services:
-  psikologi-app:
+  psikologi-ups:
     container_name: psikologi-app
     build:
       context: .
