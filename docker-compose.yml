@@ -1,6 +1,6 @@
 services:
-  psikologi-baru:
-    container_name: psikologi-baru
+  labpsycho:
+    container_name: labpsycho
     build:
       context: .
     restart: always
