@@ -1,6 +1,6 @@
 services:
-  psikologi-app:
-    container_name: psikologi-lah
+  psikologi-test:
+    container_name: psikologi-app
     build:
       context: .
     restart: always
