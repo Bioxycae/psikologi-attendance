@@ -1,4 +1,4 @@
-node:24-alpine AS deps
+b node:24-alpine AS deps
 
 WORKDIR /app
 
