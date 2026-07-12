@@ -1,5 +1,5 @@
 services:
-  labpsycho7:
+  psikologi-app:
     container_name: psikologi-app
     build:
       context: .
