@@ -75,7 +75,7 @@ const LoginPage = () => {
                      <BrainCircuit size={24} className="text-purple-300" />
 
                      <h1 className="text-xl font-semibold tracking-wide text-(--pertama)">
-                        PsychoLabdddd
+                        PsychoLab
                      </h1>
                   </div>
 
