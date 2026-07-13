@@ -87,7 +87,7 @@ export const ValidationStatus = ({
                   : isFaceProcessing
                      ? "Processing Biometric..."
                      : "Start Verification"
-               : mode === "attendance" && !isLivenessVerified
+               : !isLivenessVerified
                   ? isLivenessProcessing
                      ? currentChallenge ? `Please ${currentChallenge}...` : "Processing Liveness..."
                      : "Starting Liveness..."
@@ -112,10 +112,11 @@ export const ValidationStatus = ({
       isSubmittingAttendance ||
       (
          isFaceVerified &&
-         (
-            mode !== "attendance" ||
-            isLivenessVerified
-         ) &&
+         !isLivenessVerified
+      ) ||
+      (
+         isFaceVerified &&
+         isLivenessVerified &&
          !isAttendanceReady
       );
 
@@ -154,8 +155,7 @@ export const ValidationStatus = ({
                   </div>
                </div>
 
-               {mode === "attendance" && (
-                  <div className="space-y-3">
+               <div className="space-y-3">
                      <div className="flex items-center justify-between gap-4">
                         <p className="text-sm sm:text-base font-semibold text-(--pertama) xl:text-white">
                            Liveness Check :
@@ -199,8 +199,7 @@ export const ValidationStatus = ({
                         </div>
                      )}
                   </div>
-               )}
-            </div>
+               </div>
          </div>
 
          <div className="hidden xl:flex flex-col gap-3">
@@ -208,7 +207,7 @@ export const ValidationStatus = ({
                type="button"
                onClick={handleMobileAction}
                disabled={isMobileButtonDisabled}
-               className="flex h-26 cursor-pointer items-center justify-center gap-4 rounded-md bg-(--pertama) px-6 text-2xl font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+               className="flex min-h-20 cursor-pointer items-center justify-center gap-3 rounded-md bg-(--pertama) px-4 py-3 text-center text-lg font-semibold leading-tight text-white disabled:cursor-not-allowed disabled:opacity-50 xl:min-h-24 xl:text-xl"
             >
                {isFaceProcessing || isAutoVerifying || isLivenessProcessing || isSubmittingAttendance ? (
                   <Loader2 size={28} className="animate-spin" />
