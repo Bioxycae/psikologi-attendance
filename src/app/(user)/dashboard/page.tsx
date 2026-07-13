@@ -316,7 +316,7 @@ const DashboardPage = () => {
                            router.push("/validate");
                         }}
                         disabled={isNavigating}
-                        className="hidden h-26 w-full max-w-sm cursor-pointer flex-col items-center justify-center gap-3 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors duration-300 px-6 text-base font-semibold text-white shadow-md lg:flex disabled:opacity-70 disabled:cursor-not-allowed"
+                        className="hidden h-26 w-full max-w-sm cursor-pointer flex-col items-center justify-center gap-3 rounded-lg bg-(--ketujuh)/90 hover:bg-(--ketujuh) transition-colors duration-300 px-6 text-base font-semibold text-white shadow-md lg:flex disabled:opacity-70 disabled:cursor-not-allowed"
                      >
                        {isNavigating ? <Loader2 size={28} className="animate-spin" /> : <ScanFace size={28} />}
                        {isNavigating ? "Loading..." : getButtonText()}
@@ -456,7 +456,7 @@ const DashboardPage = () => {
                    router.push("/validate");
                 }}
                 disabled={isNavigating}
-                className="fixed bottom-20 left-1/2 z-40 flex h-12 w-11/12 -translate-x-1/2 cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors duration-300 px-4 text-sm font-semibold text-white shadow-lg whitespace-nowrap lg:hidden disabled:opacity-70 disabled:cursor-not-allowed"
+                className="fixed bottom-20 left-1/2 z-40 flex h-12 w-11/12 -translate-x-1/2 cursor-pointer items-center justify-center gap-2 rounded-lg bg-(--ketujuh)/90 hover:bg-(--ketujuh) transition-colors duration-300 px-4 text-sm font-semibold text-white shadow-lg whitespace-nowrap lg:hidden disabled:opacity-70 disabled:cursor-not-allowed"
              >
                {isNavigating ? "Loading..." : getButtonText()}
                {isNavigating ? <Loader2 size={20} className="animate-spin" /> : <ScanFace size={20} />}

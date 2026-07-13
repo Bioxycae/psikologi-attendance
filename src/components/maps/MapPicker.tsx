@@ -15,7 +15,7 @@ const SearchControl = ({ onChange }: { onChange: ({ latitude, longitude }: { lat
 
    useEffect(() => {
       const provider = new OpenStreetMapProvider();
-      // @ts-ignore
+      // @ts-expect-error - leaflet-geosearch types are incomplete
       const searchControl = new GeoSearchControl({
          provider: provider,
          style: "bar",

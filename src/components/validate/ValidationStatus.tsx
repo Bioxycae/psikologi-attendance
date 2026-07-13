@@ -1,8 +1,8 @@
-import { CheckSquare, Loader2, RefreshCcw } from "lucide-react";
+import { CheckSquare, Loader2 } from "lucide-react";
 
 type ValidationStatusProps = {
    mode: string;
-   onSwitchCamera: () => void;
+
    detectedFaceName: string | null;
    isLocationPassed: boolean;
    isLocationProcessing: boolean;
@@ -26,9 +26,9 @@ const PassBadge = ({
 }: {
    children: React.ReactNode;
 }) => (
-   <div className="flex h-10 w-32 sm:w-40 min-w-0 shrink-0 items-center justify-center gap-1 sm:gap-2 rounded-md bg-teal-100 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-(--ketujuh) xl:bg-white">
+   <div className="flex min-h-10 w-auto min-w-0 max-w-full items-center justify-center gap-1 sm:gap-2 rounded-md bg-teal-100 px-3 py-2 sm:px-4 text-xs sm:text-sm font-semibold text-(--ketujuh) xl:bg-white">
       <CheckSquare size={16} className="hidden sm:block shrink-0" />
-      <span className="truncate">{children}</span>
+      <span className="break-words text-center">{children}</span>
    </div>
 );
 
@@ -37,8 +37,8 @@ const PendingBadge = ({
 }: {
    children: React.ReactNode;
 }) => (
-   <div className="flex h-10 w-32 sm:w-40 min-w-0 shrink-0 items-center justify-center rounded-md bg-(--ketiga) px-2 sm:px-4 text-xs sm:text-sm font-semibold text-(--pertama) xl:bg-white/15 xl:text-white">
-      <span className="truncate">{children}</span>
+   <div className="flex min-h-10 w-auto min-w-0 max-w-full items-center justify-center rounded-md bg-(--ketiga) px-3 py-2 sm:px-4 text-xs sm:text-sm font-semibold text-(--pertama) xl:bg-white/15 xl:text-white">
+      <span className="break-words text-center">{children}</span>
    </div>
 );
 
@@ -47,8 +47,8 @@ const ChallengeBadge = ({
 }: {
    children: React.ReactNode;
 }) => (
-   <div className="flex h-10 w-32 sm:w-40 min-w-0 shrink-0 items-center justify-center rounded-md bg-orange-100 px-2 sm:px-4 text-xs sm:text-sm font-semibold capitalize text-orange-700 xl:bg-orange-500/20 xl:text-orange-300">
-      <span className="truncate">{children}</span>
+   <div className="flex min-h-10 w-auto min-w-0 max-w-full items-center justify-center rounded-md bg-orange-100 px-3 py-2 sm:px-4 text-xs sm:text-sm font-semibold capitalize text-orange-700 xl:bg-orange-500/20 xl:text-orange-300">
+      <span className="break-words text-center">{children}</span>
    </div>
 );
 
@@ -67,7 +67,6 @@ export const ValidationStatus = ({
    isAttendanceReady,
    isSubmittingAttendance,
    onAttendance,
-   onSwitchCamera,
 }: ValidationStatusProps) => {
    const attendanceButtonLabel =
       mode === "attendance"
@@ -126,7 +125,7 @@ export const ValidationStatus = ({
       <div className="flex h-full flex-col gap-3 xl:gap-5">
          <div className="flex flex-col gap-3 rounded-xl border border-(--pertama) p-4 xl:flex-1 xl:border-0 xl:bg-(--pertama) xl:p-6">
             {isAttendanceReady && (
-               <div className="hidden xl:flex h-10 items-center justify-center gap-3 rounded-md bg-teal-100 text-base font-semibold text-(--ketujuh)">
+               <div className="flex h-10 items-center justify-center gap-3 rounded-md bg-teal-100 text-base font-semibold text-(--ketujuh)">
                   <CheckSquare size={20} />
                   All Check Pass
                </div>
@@ -134,8 +133,8 @@ export const ValidationStatus = ({
 
             <div className="space-y-3 xl:space-y-5">
                <div className="space-y-2">
-                  <div className="flex items-center justify-between gap-3">
-                     <p className="text-sm sm:text-base font-semibold text-(--pertama) xl:text-white">
+                  <div className="flex flex-row flex-wrap items-center justify-between gap-2 xl:gap-3">
+                     <p className="min-w-0 text-sm sm:text-base font-semibold text-(--pertama) xl:text-white">
                         Biometric Match :
                      </p>
 
@@ -156,8 +155,8 @@ export const ValidationStatus = ({
                </div>
 
                <div className="space-y-3">
-                     <div className="flex items-center justify-between gap-4">
-                        <p className="text-sm sm:text-base font-semibold text-(--pertama) xl:text-white">
+                     <div className="flex flex-row flex-wrap items-center justify-between gap-2 xl:gap-3">
+                        <p className="min-w-0 text-sm sm:text-base font-semibold text-(--pertama) xl:text-white">
                            Liveness Check :
                         </p>
 
@@ -179,7 +178,7 @@ export const ValidationStatus = ({
                      </div>
 
                      {currentChallenge && (
-                        <div className="hidden rounded-md border border-(--pertama) bg-(--kedua) p-4 xl:block xl:border-white/20 xl:bg-white">
+                        <div className="rounded-md border border-(--pertama) bg-(--kedua) p-4 xl:border-white/20 xl:bg-white">
                            <p className="text-sm text-(--pertama) xl:text-(--pertama)">
                               Expression :
                            </p>
@@ -202,64 +201,36 @@ export const ValidationStatus = ({
                </div>
          </div>
 
-         <div className="hidden xl:flex flex-col gap-3">
-            <button
-               type="button"
-               onClick={handleMobileAction}
-               disabled={isMobileButtonDisabled}
-               className="flex min-h-20 cursor-pointer items-center justify-center gap-3 rounded-md bg-(--pertama) px-4 py-3 text-center text-lg font-semibold leading-tight text-white disabled:cursor-not-allowed disabled:opacity-50 xl:min-h-24 xl:text-xl"
-            >
-               {isFaceProcessing || isAutoVerifying || isLivenessProcessing || isSubmittingAttendance ? (
-                  <Loader2 size={28} className="animate-spin" />
+         <div className="fixed bottom-0 left-0 right-0 z-40 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] md:static md:z-auto md:w-full md:p-0 md:pb-0 pointer-events-none">
+            <div className="mx-auto w-full max-w-lg md:max-w-none pointer-events-auto flex flex-col gap-3">
+               {isVerificationRunning ? (
+                  <button
+                     type="button"
+                     onClick={onStopVerification}
+                     className="flex w-full min-h-14 md:h-auto xl:h-[82px] cursor-pointer items-center justify-center gap-2 rounded-md bg-red-100 px-4 py-3 text-center text-sm sm:text-base font-semibold text-red-600 hover:bg-red-200 transition-colors shadow-lg md:shadow-none whitespace-nowrap"
+                  >
+                     <Loader2 size={22} className="animate-spin shrink-0" />
+                     Stop Verification
+                  </button>
                ) : (
-                  <CheckSquare size={28} />
+                  <button
+                     type="button"
+                     onClick={handleMobileAction}
+                     disabled={isMobileButtonDisabled}
+                     className="flex w-full min-h-14 md:h-auto xl:h-[82px] cursor-pointer items-center justify-center gap-2 rounded-md bg-(--pertama) px-4 py-3 text-center text-sm sm:text-base font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50 shadow-lg md:shadow-none whitespace-nowrap"
+                  >
+                     {isFaceProcessing || isAutoVerifying || isLivenessProcessing || isSubmittingAttendance ? (
+                        <Loader2 size={22} className="animate-spin shrink-0" />
+                     ) : (
+                        <CheckSquare size={22} className="shrink-0" />
+                     )}
+                     {mobileButtonLabel}
+                  </button>
                )}
-               {mobileButtonLabel}
-            </button>
-            {isVerificationRunning && (
-               <button
-                  type="button"
-                  onClick={onStopVerification}
-                  className="flex h-14 cursor-pointer items-center justify-center gap-2 rounded-md bg-red-100 text-red-600 font-semibold hover:bg-red-200 transition-colors"
-               >
-                  Stop Verification
-               </button>
-            )}
+            </div>
          </div>
 
-         <div className="fixed bottom-6 left-1/2 z-40 flex w-11/12 -translate-x-1/2 flex-col gap-3 xl:static xl:w-auto xl:translate-x-0 xl:hidden">
-            <div className="flex gap-3">
-               <button
-                  type="button"
-                  onClick={onSwitchCamera}
-                  className="flex h-14 w-14 sm:h-16 sm:w-16 shrink-0 cursor-pointer items-center justify-center rounded-md bg-(--pertama) text-white shadow-[0_4px_14px_rgba(0,0,0,0.25)] transition-colors hover:bg-slate-700 active:scale-95"
-               >
-                  <RefreshCcw size={24} className="sm:w-[26px] sm:h-[26px]" />
-               </button>
-               <button
-                  type="button"
-                  onClick={handleMobileAction}
-                  disabled={isMobileButtonDisabled}
-                  className="flex h-14 sm:h-16 min-w-0 flex-1 cursor-pointer items-center justify-center gap-2 rounded-md bg-(--pertama) px-2 sm:px-6 text-sm sm:text-lg font-semibold whitespace-nowrap text-white shadow-[0_4px_14px_rgba(0,0,0,0.25)] transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50 active:scale-95"
-               >
-                  {isFaceProcessing || isAutoVerifying || isLivenessProcessing || isSubmittingAttendance ? (
-                     <Loader2 size={22} className="animate-spin shrink-0" />
-                  ) : (
-                     <CheckSquare size={22} className="shrink-0" />
-                  )}
-                  <span className="truncate">{mobileButtonLabel}</span>
-               </button>
-            </div>
-            {isVerificationRunning && (
-               <button
-                  type="button"
-                  onClick={onStopVerification}
-                  className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-red-100 text-red-600 font-semibold shadow-[0_4px_14px_rgba(0,0,0,0.15)] hover:bg-red-200 transition-colors"
-               >
-                  Stop Verification
-               </button>
-            )}
-         </div>
+
       </div>
    );
 };

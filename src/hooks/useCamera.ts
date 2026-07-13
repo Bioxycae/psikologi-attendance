@@ -182,6 +182,16 @@ export const useCamera =
          setIsCameraOpened(false);
       };
 
+      const isCameraStreamActive = () => {
+         return !!(
+            streamRef.current &&
+            streamRef.current.getVideoTracks().length > 0 &&
+            streamRef.current.getVideoTracks()[0].readyState === "live" &&
+            videoRef.current &&
+            videoRef.current.srcObject === streamRef.current
+         );
+      };
+
       useEffect(() => {
          loadCameraDevices();
       }, []);
@@ -225,5 +235,6 @@ export const useCamera =
          setSelectedCamera,
          handleOpenCamera,
          handleCloseCamera,
+         isCameraStreamActive,
       };
    };

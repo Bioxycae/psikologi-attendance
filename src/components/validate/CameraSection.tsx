@@ -1,4 +1,4 @@
-import { ChevronUp, ScanFace } from "lucide-react";
+import { ChevronUp, ScanFace, SwitchCamera } from "lucide-react";
 import React, { useState } from "react";
 
 type CameraDevice = {
@@ -40,9 +40,29 @@ export const CameraSection = ({
       )?.label ||
       "Select camera";
 
+   const handleSwitchCamera = () => {
+      if (cameraDevices.length <= 1) return;
+      const currentIndex = cameraDevices.findIndex(d => d.deviceId === selectedCamera);
+      const nextIndex = (currentIndex + 1) % cameraDevices.length;
+      setSelectedCamera(cameraDevices[nextIndex].deviceId);
+   };
+
    return (
       <div className="flex min-h-0 flex-col gap-3 xl:h-full xl:gap-5">
-         <div className="relative min-h-[380px] overflow-hidden rounded-xl border border-(--pertama) bg-(--kedua) xl:min-h-0 xl:flex-1">
+         <div className="relative aspect-square w-full overflow-hidden rounded-xl border border-(--pertama) bg-(--kedua) xl:aspect-auto xl:w-auto xl:min-h-0 xl:flex-1">
+            {cameraDevices.length > 1 && (
+               <div className="absolute bottom-3 right-3 z-30 xl:hidden">
+                  <button
+                     type="button"
+                     className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg bg-(--pertama) text-white shadow-md transition-colors hover:bg-slate-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                     onClick={handleSwitchCamera}
+                     aria-label="Switch camera"
+                     title="Switch camera"
+                  >
+                     <SwitchCamera size={22} />
+                  </button>
+               </div>
+            )}
             <video
                ref={videoRef}
                autoPlay
@@ -132,13 +152,13 @@ export const CameraSection = ({
                )}
          </div>
 
-         <div className="hidden shrink-0 rounded-xl border border-(--pertama) p-4 xl:block xl:p-5">
-            <div className="flex items-center gap-3 xl:gap-4">
+         <div className="hidden shrink-0 rounded-xl border border-(--pertama) p-5 xl:block">
+            <div className="flex items-center gap-4">
                <p className="shrink-0 text-base font-semibold text-(--pertama)">
                   Camera :
                </p>
 
-               <div className="relative min-w-0 flex-1 xl:max-w-56">
+               <div className="relative min-w-0 flex-1 max-w-56">
                   <button
                      type="button"
                      onClick={() =>
@@ -205,6 +225,8 @@ export const CameraSection = ({
                </div>
             </div>
          </div>
+
+
       </div>
    );
 };

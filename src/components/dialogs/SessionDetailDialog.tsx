@@ -20,7 +20,7 @@ export const SessionDetailDialog = ({
 
    return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
-         <div className="w-full max-w-2xl md:max-w-5xl rounded-2xl border border-(--pertama) bg-(--kesembilan) p-8 shadow-2xl transition-all duration-300">
+         <div className="w-full max-w-2xl md:max-w-5xl max-h-[95vh] overflow-y-auto rounded-2xl border border-(--pertama) bg-(--kesembilan) p-6 md:p-8 shadow-2xl transition-all duration-300">
             <div className="flex items-start justify-between gap-4">
                <div>
                   <h2 className="text-2xl font-bold text-(--pertama)">
@@ -62,43 +62,43 @@ export const SessionDetailDialog = ({
                   />
                </div>
 
-               <div className="flex flex-col rounded-xl bg-(--pertama) p-8 text-sm text-(--kedua) w-full shadow-inner">
-                  <div className="flex items-center justify-between border-b border-(--kedua)/10 pb-3.5">
+               <div className="flex flex-col rounded-xl bg-(--pertama) p-4 sm:p-8 text-sm text-(--kedua) w-full shadow-inner">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-(--kedua)/10 pb-3.5 gap-1 sm:gap-4">
                      <span className="font-medium text-(--kedua)/70 min-w-[140px]">Session Code</span>
-                     <span className="font-bold text-base text-right flex-1">PL-{session.id}</span>
+                     <span className="font-bold text-base text-left sm:text-right flex-1">PL-{session.id}</span>
                   </div>
 
-                  <div className="flex items-center justify-between border-b border-(--kedua)/10 py-3.5">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-(--kedua)/10 py-3.5 gap-1 sm:gap-4">
                      <span className="font-medium text-(--kedua)/70 min-w-[140px]">Participant</span>
-                     <span className="font-bold text-right flex-1">{session.user_name}</span>
+                     <span className="font-bold text-left sm:text-right flex-1">{session.user_name}</span>
                   </div>
 
-                  <div className="flex items-center justify-between border-b border-(--kedua)/10 py-3.5">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-(--kedua)/10 py-3.5 gap-1 sm:gap-4">
                      <span className="font-medium text-(--kedua)/70 min-w-[140px]">Check-In Time</span>
-                     <span className="font-bold text-right flex-1">
+                     <span className="font-bold text-left sm:text-right flex-1">
                         {formatAttendanceDate(session.attendance_time)}
                      </span>
                   </div>
 
-                  <div className="flex items-center justify-between border-b border-(--kedua)/10 py-3.5">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-(--kedua)/10 py-3.5 gap-1 sm:gap-4">
                      <span className="font-medium text-(--kedua)/70 min-w-[140px]">Check-Out Time</span>
-                     <span className="font-bold text-right flex-1">
+                     <span className="font-bold text-left sm:text-right flex-1">
                         {session.checkout_time
                            ? formatAttendanceDate(session.checkout_time)
                            : "In Progress"}
                      </span>
                   </div>
 
-                  <div className="flex items-center justify-between border-b border-(--kedua)/10 py-3.5">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-(--kedua)/10 py-3.5 gap-1 sm:gap-4">
                      <span className="font-medium text-(--kedua)/70 min-w-[140px]">Checkpoint Status</span>
-                     <span className="font-bold text-right flex-1">
+                     <span className="font-bold text-left sm:text-right flex-1">
                         {session.checkpoint_time !== null ? "Completed" : "Incomplete"}
                      </span>
                   </div>
 
-                  <div className="flex items-center justify-between pt-3.5">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-3.5 gap-1 sm:gap-4">
                      <span className="font-medium text-(--kedua)/70 min-w-[140px]">Location</span>
-                     <span className="text-right font-bold flex-1">
+                     <span className="font-bold text-left sm:text-right flex-1">
                         {session.location_name || "-"}
                      </span>
                   </div>

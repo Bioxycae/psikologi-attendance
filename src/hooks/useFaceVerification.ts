@@ -232,6 +232,7 @@ export const useFaceVerification = (
       matchedUser,
       isAutoVerifying,
       faceStatusMessage,
+      registeredDescriptor,
 
       setIsFaceVerified,
       setMatchedUser,

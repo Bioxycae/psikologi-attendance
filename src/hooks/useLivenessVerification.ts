@@ -34,6 +34,7 @@ export const useLivenessVerification = (
    videoRef: React.RefObject<HTMLVideoElement | null>,
    isCameraOpened: boolean,
    isFaceVerified: boolean,
+   referenceDescriptor: Float32Array | null,
    onFraudDetected?: () => void
 ) => {
    const [
@@ -66,6 +67,8 @@ export const useLivenessVerification = (
    >([]);
 
    const isProcessingRef = useRef(false);
+   const lastValidFaceTimeRef = useRef<number | null>(null);
+   const mismatchCountRef = useRef<number>(0);
 
    const generateRandomChallenges =
       () => {
@@ -111,39 +114,66 @@ export const useLivenessVerification = (
                .withFaceDescriptors()
                .withFaceExpressions();
 
-         if (!isProcessingRef.current || !detections || detections.length === 0) {
+         if (!isProcessingRef.current || !detections) {
+            return;
+         }
+
+         if (detections.length === 0) {
+            if (lastValidFaceTimeRef.current !== null) {
+               // eslint-disable-next-line react-hooks/purity
+               if (Date.now() - lastValidFaceTimeRef.current > 2000) {
+                  toast.dismiss("liveness");
+                  toast.error(
+                     "Wajah tidak terdeteksi. Silakan ulangi verifikasi.",
+                     { duration: 3500 }
+                  );
+                  if (onFraudDetected) onFraudDetected();
+                  stopLivenessVerification();
+               }
+            }
             return;
          }
 
          if (detections.length > 1) {
             toast.dismiss("liveness");
             toast.error(
-               "Multiple faces detected during liveness check! Verification reset.",
+               "Terdeteksi lebih dari satu wajah. Silakan ulangi verifikasi.",
                { duration: 3500 }
             );
             if (onFraudDetected) onFraudDetected();
+            stopLivenessVerification();
             return;
          }
 
          const detection = detections[0];
 
-         const cachedFace = getCachedFaceDescriptor();
-         if (cachedFace && cachedFace.descriptor) {
+         if (referenceDescriptor) {
             const distance = faceapi.euclideanDistance(
                detection.descriptor,
-               cachedFace.descriptor
+               referenceDescriptor
             );
-            // Increased threshold to 0.65 for liveness to tolerate extreme expressions
-            if (distance > 0.65) {
-               toast.dismiss("liveness");
-               toast.error(
-                  "Face swapped during liveness check! Verification reset.",
-                  { duration: 3500 }
-               );
-               if (onFraudDetected) onFraudDetected();
-               return;
+            
+            if (distance > 0.5) {
+               mismatchCountRef.current += 1;
+               if (mismatchCountRef.current >= 3) {
+                  toast.dismiss("liveness");
+                  toast.error(
+                     "Identitas berubah. Silakan ulangi verifikasi.",
+                     { duration: 3500 }
+                  );
+                  if (onFraudDetected) onFraudDetected();
+                  stopLivenessVerification();
+                  return;
+               }
+               // Don't process expression if mismatched this frame
+               return; 
+            } else {
+               mismatchCountRef.current = 0;
             }
          }
+
+         // eslint-disable-next-line react-hooks/purity
+         lastValidFaceTimeRef.current = Date.now();
 
          const score =
             detection.expressions[
@@ -232,6 +262,8 @@ export const useLivenessVerification = (
             true
          );
          isProcessingRef.current = true;
+         lastValidFaceTimeRef.current = Date.now();
+         mismatchCountRef.current = 0;
 
          toast.loading(
             "Liveness verification started",
@@ -258,7 +290,8 @@ export const useLivenessVerification = (
          if (!isSubscribed) return;
          await verifyExpression();
          if (isSubscribed) {
-            timeoutId = setTimeout(runDetection, 1000);
+            // Check identity frequently for security
+            timeoutId = setTimeout(runDetection, 500);
          }
       };
 

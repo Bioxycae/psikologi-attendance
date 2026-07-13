@@ -52,28 +52,29 @@ const ValidatePage = () => {
       attendanceMode ===
       "attendance";
 
-   const liveness =
-      useLivenessVerification(
-         camera.videoRef,
-         camera.isCameraOpened,
-         face.isFaceVerified
-      );
+      const liveness =
+         useLivenessVerification(
+            camera.videoRef,
+            camera.isCameraOpened,
+            face.isFaceVerified,
+            face.registeredDescriptor,
+            () => {
+               face.resetFaceVerification();
+            }
+         );
+
     const handleStopVerification = () => {
-       face.stopAutoVerification();
        face.resetFaceVerification();
        liveness.stopLivenessVerification();
     };
 
     const resetVerification = () => {
-       // Stop any ongoing liveness processing
        handleStopVerification();
-       // Reset face verification state
-       face.setIsFaceVerified(false);
-       face.setMatchedUser(null);
-       // Reset liveness state
-       liveness.setIsLivenessVerified(false);
-       liveness.setCompletedChallenges([]);
-       liveness.setCurrentChallengeIndex(0);
+       
+       // location reset mechanism
+       location.setIsLocationPassed(false);
+       sessionStorage.removeItem("verifiedLocation");
+       camera.handleCloseCamera();
     };
 
    const isAttendanceReady =
@@ -120,7 +121,8 @@ const ValidatePage = () => {
          }
 
          if (
-            !camera.isCameraOpened
+            !camera.isCameraOpened || 
+            !camera.isCameraStreamActive()
          ) {
             toast.error(
                "Open camera first"
@@ -140,13 +142,6 @@ const ValidatePage = () => {
          await face.startAutoVerification();
       };
 
-   const handleSwitchCamera = () => {
-      if (camera.cameraDevices.length <= 1) return;
-      const currentIndex = camera.cameraDevices.findIndex(d => d.deviceId === camera.selectedCamera);
-      const nextIndex = (currentIndex + 1) % camera.cameraDevices.length;
-      camera.setSelectedCamera(camera.cameraDevices[nextIndex].deviceId);
-   };
-
    if (attendance.isInitialLoading) {
       return (
          <div className="flex h-full min-h-[400px] items-center justify-center rounded-xl border border-(--pertama)">
@@ -156,36 +151,36 @@ const ValidatePage = () => {
    }
 
    return (
-      <div className="flex min-h-full flex-col gap-5 pb-32 lg:h-full lg:gap-6 lg:pb-0">
-         <div className={`shrink-0 rounded-xl border border-(--pertama) ${location.isLocationPassed ? "p-4 lg:px-6 lg:py-3" : "p-4 lg:px-8 lg:py-4"}`}>
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-               <div className={location.isLocationPassed ? "hidden lg:block" : "block"}>
+      <div className="flex min-h-full flex-col gap-5 pb-28 md:h-full md:gap-6 md:pb-0">
+         <div className={`shrink-0 rounded-xl border border-(--pertama) ${location.isLocationPassed ? "p-4 md:px-6 md:py-3" : "p-4 md:px-8 md:py-4"}`}>
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+               <div className={location.isLocationPassed ? "hidden md:block" : "block"}>
                   <h1 className={`${location.isLocationPassed ? "text-xl" : "text-3xl"} font-semibold text-(--pertama)`}>
                      Validate
                   </h1>
 
                   {!location.isLocationPassed && (
-                     <p className="mt-5 max-w-72 text-base leading-6 text-(--keenam) lg:mt-1 lg:max-w-none lg:text-sm">
+                     <p className="mt-5 max-w-72 text-base leading-6 text-(--keenam) md:mt-1 md:max-w-none md:text-sm">
                         Verify yourself and ensure your location is accurate.
                      </p>
                   )}
                </div>
 
-               <div className={`flex w-full ${location.isLocationPassed || attendanceMode === "completed" ? "flex-row items-center justify-between lg:w-auto lg:justify-end lg:gap-3" : "flex-col gap-3 lg:w-auto lg:flex-row lg:items-center"}`}>
+               <div className={`flex w-full ${location.isLocationPassed || attendanceMode === "completed" ? "flex-row gap-2 sm:items-center sm:justify-end md:w-auto md:gap-3" : "flex-col gap-3 md:w-auto md:flex-row md:items-center"}`}>
                   {attendanceMode === "completed" ? (
                      <button
                         type="button"
                         disabled
-                        className="flex h-14 w-full sm:h-22 lg:w-auto min-w-0 flex-col items-center justify-center gap-1 sm:gap-2 rounded-md bg-(--pertama) px-2 sm:px-4 text-[13px] sm:text-base font-semibold whitespace-nowrap text-white cursor-not-allowed opacity-50 lg:h-26 lg:min-w-45"
+                        className="flex h-14 w-full sm:h-22 md:w-auto min-w-0 flex-col items-center justify-center gap-1 sm:gap-2 rounded-md bg-(--pertama) px-2 sm:px-4 text-[13px] sm:text-base font-semibold whitespace-nowrap text-white cursor-not-allowed opacity-50 md:h-26 md:min-w-45"
                      >
                         <CheckSquare size={24} className="hidden sm:block shrink-0" />
                         <span className="truncate">Location Completed</span>
                      </button>
                   ) : location.isLocationPassed ? (
                      <>
-                        <div className="flex h-10 items-center justify-center gap-2 rounded-md bg-teal-100 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-(--ketujuh) lg:h-11">
-                           <CheckSquare size={16} />
-                           Location Pass
+                        <div className="flex flex-1 min-w-0 h-10 items-center justify-center gap-2 rounded-md bg-teal-100 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-(--ketujuh) md:h-11 md:flex-none">
+                           <CheckSquare size={16} className="shrink-0" />
+                           <span className="truncate">Location Pass</span>
                         </div>
 
                         <button
@@ -196,10 +191,10 @@ const ValidatePage = () => {
                               camera.handleCloseCamera();
                               face.resetFaceVerification();
                            }}
-                           className="flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md bg-orange-100 px-3 sm:px-4 text-xs sm:text-sm font-semibold text-orange-700 transition-colors hover:bg-orange-200 lg:h-11"
+                           className="flex flex-1 min-w-0 h-10 cursor-pointer items-center justify-center gap-2 rounded-md bg-orange-100 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-orange-700 transition-colors hover:bg-orange-200 md:h-11 md:flex-none"
                         >
-                           <RefreshCcw size={16} />
-                           Relocate
+                           <RefreshCcw size={16} className="shrink-0" />
+                           <span className="truncate">Relocate</span>
                         </button>
                      </>
                   ) : (
@@ -213,7 +208,7 @@ const ValidatePage = () => {
                            location.isLoading
                         }
 
-                        className="flex h-14 w-full sm:h-22 lg:w-auto min-w-0 cursor-pointer flex-col items-center justify-center gap-1 sm:gap-2 rounded-md bg-(--pertama) px-2 sm:px-4 text-[13px] sm:text-base font-semibold whitespace-nowrap text-white disabled:cursor-not-allowed disabled:opacity-50 lg:h-26 lg:min-w-45"
+                        className="flex h-14 w-full sm:h-22 md:w-auto min-w-0 cursor-pointer flex-col items-center justify-center gap-1 sm:gap-2 rounded-md bg-(--pertama) px-2 sm:px-4 text-[13px] sm:text-base font-semibold whitespace-nowrap text-white disabled:cursor-not-allowed disabled:opacity-50 md:h-26 md:min-w-45"
                      >
                         {location.isLoading ? (
                            <Loader2 size={24} className="hidden sm:block animate-spin shrink-0" />
@@ -271,17 +266,17 @@ const ValidatePage = () => {
             )}
 
          {!location.isLocationPassed ? (
-            <div className="flex min-h-34 flex-col items-center justify-center gap-6 rounded-xl border border-(--pertama) px-6 py-8 lg:min-h-34">
+            <div className="flex min-h-34 flex-col items-center justify-center gap-6 rounded-xl border border-(--pertama) px-6 py-8 md:min-h-34">
                <div className="max-w-2xl rounded-xl border border-amber-200 bg-amber-50 px-5 py-6 text-center">
                   <h3 className="text-3xl font-bold text-amber-700">
                      Smartphone Recommended
                   </h3>
-                  <p className="mt-3 text-base font-medium text-amber-600 lg:text-lg">
+                  <p className="mt-3 text-base font-medium text-amber-600 md:text-lg">
                      For optimal GPS accuracy, please use a smartphone. PC or laptop locations may be inaccurate.
                   </p>
                </div>
 
-               <h2 className="text-center text-lg font-semibold leading-8 text-(--pertama) lg:text-xl">
+               <h2 className="text-center text-lg font-semibold leading-8 text-(--pertama) md:text-xl">
                   Please verify your location using the <span className="font-bold">Location Check</span> button above before opening the camera.
                </h2>
             </div>
@@ -299,7 +294,7 @@ const ValidatePage = () => {
             </div>
          ) : (
             <div className="grid grid-cols-1 gap-3 xl:min-h-0 xl:flex-1 xl:grid-cols-12 xl:gap-6">
-               <div className="min-h-0 xl:col-span-9">
+               <div className="min-h-0 xl:col-span-9 flex flex-col gap-3 xl:gap-5">
                   <CameraSection
                      videoRef={
                         camera.videoRef
@@ -401,7 +396,7 @@ const ValidatePage = () => {
                         attendance.isSubmittingAttendance
                      }
 
-                     onSwitchCamera={handleSwitchCamera}
+
 
                      onAttendance={() =>
                         attendance.handleAttendance({
@@ -420,28 +415,7 @@ const ValidatePage = () => {
                            isLivenessVerified:
                               liveness.isLivenessVerified,
 
-                           resetVerification:
-                              () => {
-                                 face.setIsFaceVerified(
-                                    false
-                                 );
-
-                                 face.setMatchedUser(
-                                    null
-                                 );
-
-                                 liveness.setIsLivenessVerified(
-                                    false
-                                 );
-
-                                 liveness.setCompletedChallenges(
-                                    []
-                                 );
-
-                                 liveness.setCurrentChallengeIndex(
-                                    0
-                                 );
-                              },
+                           resetVerification: resetVerification,
                         })
                      }
                   />
