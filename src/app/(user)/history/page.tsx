@@ -418,7 +418,9 @@ const HistoryPage =
                   "Participant",
                   "Date",
                   "Time In",
+                  "Checkpoint",
                   "Time Out",
+                  "Location",
                   "Status",
                ],
                ...filteredData.map(
@@ -441,8 +443,12 @@ const HistoryPage =
                            session.attendance_time
                         ),
                         formatTime(
+                           session.checkpoint_time
+                        ),
+                        formatTime(
                            session.checkout_time
                         ),
+                        session.location_name || "-",
                         getSessionStatus(
                            session
                         ),
