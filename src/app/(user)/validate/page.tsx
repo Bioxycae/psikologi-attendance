@@ -52,28 +52,34 @@ const ValidatePage = () => {
       attendanceMode ===
       "attendance";
 
-   const handleStopVerification = () => {
-      face.stopAutoVerification();
-      face.resetFaceVerification();
-      liveness.stopLivenessVerification();
-   };
-
    const liveness =
       useLivenessVerification(
          camera.videoRef,
          camera.isCameraOpened,
-         face.isFaceVerified,
-         handleStopVerification
+         face.isFaceVerified
       );
+    const handleStopVerification = () => {
+       face.stopAutoVerification();
+       face.resetFaceVerification();
+       liveness.stopLivenessVerification();
+    };
+
+    const resetVerification = () => {
+       // Stop any ongoing liveness processing
+       handleStopVerification();
+       // Reset face verification state
+       face.setIsFaceVerified(false);
+       face.setMatchedUser(null);
+       // Reset liveness state
+       liveness.setIsLivenessVerified(false);
+       liveness.setCompletedChallenges([]);
+       liveness.setCurrentChallengeIndex(0);
+    };
 
    const isAttendanceReady =
       location.isLocationPassed &&
       face.isFaceVerified &&
-      (
-         isAttendanceMode
-            ? liveness.isLivenessVerified
-            : true
-      );
+      liveness.isLivenessVerified;
 
    useEffect(() => {
       if (
@@ -89,11 +95,17 @@ const ValidatePage = () => {
    }, [location.isLocationPassed, attendance.isInitialLoading, attendanceMode]);
 
    useEffect(() => {
-      if (face.isFaceVerified && isAttendanceMode && !liveness.isLivenessProcessing && !liveness.isLivenessVerified) {
+      if (
+         face.isFaceVerified &&
+         attendanceMode !== "completed" &&
+         !liveness.isLivenessProcessing &&
+         !liveness.isLivenessVerified &&
+         camera.isCameraOpened
+      ) {
          liveness.handleVerifyLiveness();
       }
    // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [face.isFaceVerified, isAttendanceMode]);
+   }, [face.isFaceVerified, attendanceMode, camera.isCameraOpened]);
 
    const handleStartVerification =
       async () => {
