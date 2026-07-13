@@ -1,6 +1,6 @@
 services:
-  labpsycho:
-    container_name: labpsycho
+  psycholab:
+    container_name: psycholab
     build:
       context: .
     restart: always
