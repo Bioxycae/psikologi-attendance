@@ -6,6 +6,7 @@ export type AttendanceSession = {
    attendance_time: string;
    checkpoint_time: string | null;
    checkout_time: string | null;
+   location_name: string | null;
 };
 
 type SessionCardProps = {
