@@ -44,196 +44,197 @@ export const useLocationVerification =
          }
       }, []);
 
-      const handleLocationCheck =
-         () => {
-            if (
-               !navigator.geolocation
-            ) {
-               toast.error(
-                  "Geolocation is not supported by your browser"
-               );
+      const handleLocationCheck = () => {
+         if (!navigator.geolocation) {
+            toast.error("Geolocation is not supported by your browser");
+            return;
+         }
 
-               return;
+         setIsLoading(true);
+
+         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+         const fetchWithTimeout = async (url: string, timeout = 3000) => {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            try {
+               const response = await fetch(url, { signal: controller.signal });
+               clearTimeout(id);
+               return response;
+            } catch (error) {
+               clearTimeout(id);
+               throw error;
             }
-
-            setIsLoading(
-               true
-            );
-
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-            const requestLocation = () => {
-               const options = isMobile
-                  ? { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 }
-                  : { enableHighAccuracy: false, timeout: 4000, maximumAge: Infinity };
-
-               navigator.geolocation.getCurrentPosition(
-                  async position => {
-                     try {
-                        const latitude =
-                           position.coords.latitude;
-
-                        const longitude =
-                           position.coords.longitude;
-
-                        setCoordinates({
-                           latitude,
-                           longitude,
-                         });
-
-                        // Fetch reverse geocoding asynchronously so it doesn't block validation
-                        fetch(
-                           `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-                        )
-                           .then((res) => res.json())
-                           .then((geoResult) => {
-                              const city =
-                                 geoResult?.address?.city ||
-                                 geoResult?.address?.county ||
-                                 geoResult?.address?.state ||
-                                 "Unknown";
-                              const country =
-                                 geoResult?.address?.country ||
-                                 "Unknown";
-                              const locName = `${city}, ${country}`;
-                              setLocationName(locName);
-                              const saved = sessionStorage.getItem("verifiedLocation");
-                              if (saved) {
-                                 try {
-                                    const data = JSON.parse(saved);
-                                    sessionStorage.setItem("verifiedLocation", JSON.stringify({ ...data, locationName: locName }));
-                                 } catch(e){}
-                              }
-                           })
-                           .catch(() => setLocationName("Unknown Location"));
-
-                        const response =
-                           await fetch(
-                              "/api/validate-location",
-                              {
-                                 method:
-                                    "POST",
-
-                                 headers: {
-                                    "Content-Type":
-                                       "application/json",
-                                 },
-
-                                 body: JSON.stringify({
-                                    latitude,
-                                    longitude,
-                                 }),
-                              }
-                           );
-
-                        const result =
-                           await response.json();
-
-                        if (
-                           !result.success
-                        ) {
-                           toast.error(
-                              result.message
-                           );
-
-                           setIsLocationPassed(
-                              false
-                           );
-
-                           return;
-                        }
-
-                        setIsLocationPassed(
-                           true
-                        );
-                        sessionStorage.setItem("verifiedLocation", JSON.stringify({
-                           isLocationPassed: true,
-                           coordinates: { latitude, longitude }
-                        }));
-
-                        toast.success(
-                           result.message
-                        );
-                     } catch {
-                        toast.error(
-                           "Failed to validate location"
-                        );
-                     } finally {
-                        setIsLoading(
-                           false
-                        );
-                     }
-                  },
-
-                  async (error) => {
-                     if (error.code === error.TIMEOUT || error.code === error.POSITION_UNAVAILABLE || !isMobile) {
-                        const validateIpLocation = async (lat: number, lon: number, city: string, country: string) => {
-                           setCoordinates({ latitude: lat, longitude: lon });
-                           const locName = `${city || "Unknown"}, ${country || "Unknown"}`;
-                           setLocationName(locName);
-
-                           const response = await fetch("/api/validate-location", {
-                              method: "POST",
-                              headers: { "Content-Type": "application/json" },
-                              body: JSON.stringify({ latitude: lat, longitude: lon }),
-                           });
-                           const result = await response.json();
-                           
-                           if (!result.success) {
-                              toast.error(result.message);
-                              setIsLocationPassed(false);
-                              setIsLoading(false);
-                           } else {
-                              setIsLocationPassed(true);
-                              setIsLoading(false);
-                              sessionStorage.setItem("verifiedLocation", JSON.stringify({
-                                 isLocationPassed: true,
-                                 coordinates: { latitude: lat, longitude: lon },
-                                 locationName: locName
-                              }));
-                              toast.warning("GPS signal is weak or unavailable. Falling back to IP location, which may be inaccurate.");
-                              toast.success(result.message);
-                           }
-                        };
-
-                        try {
-                           const ipRes = await fetch("https://get.geojs.io/v1/ip/geo.json");
-                           const ipData = await ipRes.json();
-                           if (ipData && ipData.latitude && ipData.longitude) {
-                              await validateIpLocation(Number(ipData.latitude), Number(ipData.longitude), ipData.city, ipData.country);
-                              return;
-                           }
-                        } catch(e) {
-                           try {
-                              const ipRes2 = await fetch("https://ipapi.co/json/");
-                              const ipData2 = await ipRes2.json();
-                              if (ipData2 && ipData2.latitude && ipData2.longitude) {
-                                 await validateIpLocation(Number(ipData2.latitude), Number(ipData2.longitude), ipData2.city, ipData2.country_name);
-                                 return;
-                              }
-                           } catch(err2) {}
-                        }
-                     }
-
-                     setIsLoading(false);
-                     
-                     let errorMessage = "Failed to retrieve accurate location.";
-                     if (error.code === error.PERMISSION_DENIED) {
-                        errorMessage = "Location access denied. Please explicitly allow your browser to access your location settings.";
-                     } else if (error.code === error.POSITION_UNAVAILABLE) {
-                        errorMessage = "Location information is unavailable. Please ensure your device's GPS and Wi-Fi are turned on for the best accuracy.";
-                     } else if (error.code === error.TIMEOUT) {
-                        errorMessage = "Location request timed out. Please make sure 'Location Services' are enabled in your device's OS settings.";
-                     }
-
-                     toast.error(errorMessage);
-                  },
-                  options
-               );
-            };
-
-            requestLocation();
          };
+
+         const fetchIpLocation = async () => {
+             try {
+                const ipRes = await fetchWithTimeout("https://get.geojs.io/v1/ip/geo.json", 3000);
+                const ipData = await ipRes.json();
+                if (ipData && ipData.latitude && ipData.longitude) {
+                   return { latitude: Number(ipData.latitude), longitude: Number(ipData.longitude), city: ipData.city, country: ipData.country };
+                }
+             } catch(e) {}
+             try {
+                const ipRes2 = await fetchWithTimeout("https://ipapi.co/json/", 3000);
+                const ipData2 = await ipRes2.json();
+                if (ipData2 && ipData2.latitude && ipData2.longitude) {
+                   return { latitude: Number(ipData2.latitude), longitude: Number(ipData2.longitude), city: ipData2.city, country: ipData2.country_name };
+                }
+             } catch(err2) {}
+             return null;
+         };
+
+         const ipPromise = fetchIpLocation();
+         let fallbackTriggered = false;
+
+         const runIpFallback = async () => {
+            if (fallbackTriggered) return;
+            fallbackTriggered = true;
+            
+            try {
+               const ipData = await ipPromise;
+               if (!ipData) {
+                  setIsLoading(false);
+                  toast.error("Failed to retrieve accurate location. Both GPS and IP fallback are unavailable.");
+                  return;
+               }
+
+               setCoordinates({ latitude: ipData.latitude, longitude: ipData.longitude });
+               const locName = `${ipData.city || "Unknown"}, ${ipData.country || "Unknown"}`;
+               setLocationName(locName);
+
+               const response = await fetch("/api/validate-location", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ latitude: ipData.latitude, longitude: ipData.longitude }),
+               });
+               const result = await response.json();
+               
+               if (!result.success) {
+                  toast.error(result.message);
+                  setIsLocationPassed(false);
+                  setIsLoading(false);
+               } else {
+                  setIsLocationPassed(true);
+                  setIsLoading(false);
+                  sessionStorage.setItem("verifiedLocation", JSON.stringify({
+                     isLocationPassed: true,
+                     coordinates: { latitude: ipData.latitude, longitude: ipData.longitude },
+                     locationName: locName
+                  }));
+                  toast.warning("GPS signal is weak or unavailable. Falling back to IP location, which may be inaccurate.");
+                  toast.success(result.message);
+               }
+            } catch (e) {
+               setIsLoading(false);
+               toast.error("An error occurred during IP fallback.");
+            }
+         };
+
+         // Desktop: 5 seconds timeout. Mobile: 15 seconds timeout.
+         const nativeTimeout = isMobile ? 15000 : 5000;
+         const options = { enableHighAccuracy: isMobile, maximumAge: 0, timeout: nativeTimeout };
+
+         navigator.geolocation.getCurrentPosition(
+            async position => {
+               if (fallbackTriggered) return;
+               fallbackTriggered = true;
+               
+               try {
+                  const latitude = position.coords.latitude;
+                  const longitude = position.coords.longitude;
+
+                  setCoordinates({ latitude, longitude });
+
+                  fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+                     .then((res) => res.json())
+                     .then((geoResult) => {
+                        const city = geoResult?.address?.city || geoResult?.address?.county || geoResult?.address?.state || "Unknown";
+                        const country = geoResult?.address?.country || "Unknown";
+                        const locName = `${city}, ${country}`;
+                        setLocationName(locName);
+                        const saved = sessionStorage.getItem("verifiedLocation");
+                        if (saved) {
+                           try {
+                              const data = JSON.parse(saved);
+                              sessionStorage.setItem("verifiedLocation", JSON.stringify({ ...data, locationName: locName }));
+                           } catch(e){}
+                        }
+                     })
+                     .catch(() => setLocationName("Unknown Location"));
+
+                  const response = await fetch("/api/validate-location", {
+                     method: "POST",
+                     headers: { "Content-Type": "application/json" },
+                     body: JSON.stringify({ latitude, longitude }),
+                  });
+
+                  const result = await response.json();
+
+                  if (!result.success) {
+                     toast.error(result.message);
+                     setIsLocationPassed(false);
+                     setIsLoading(false);
+                     return;
+                  }
+
+                  setIsLocationPassed(true);
+                  sessionStorage.setItem("verifiedLocation", JSON.stringify({
+                     isLocationPassed: true,
+                     coordinates: { latitude, longitude }
+                  }));
+
+                  toast.success(result.message);
+               } catch {
+                  toast.error("Failed to validate location");
+               } finally {
+                  setIsLoading(false);
+               }
+            },
+            async error => {
+               if (fallbackTriggered) return;
+
+               if (error.code === error.PERMISSION_DENIED) {
+                  fallbackTriggered = true;
+                  setIsLoading(false);
+                  toast.error("Location access denied. Please explicitly allow your browser to access your location settings.");
+                  return;
+               }
+
+               if (error.code === error.POSITION_UNAVAILABLE) {
+                  await runIpFallback();
+                  return;
+               }
+
+               if (error.code === error.TIMEOUT) {
+                  // In privacy browsers like Brave, Permissions API might be spoofed.
+                  // We use document.hasFocus() to detect if the prompt is still open.
+                  // If focus is false, the user is likely still looking at the prompt.
+                  // If focus is true, the prompt is closed, meaning they clicked Allow but GPS is slow.
+                  let isGranted = false;
+                  try {
+                     const perm = await navigator.permissions.query({ name: "geolocation" });
+                     if (perm.state === "granted") isGranted = true;
+                  } catch (e) {}
+
+                  if (isGranted || document.hasFocus()) {
+                     await runIpFallback();
+                  } else {
+                     fallbackTriggered = true;
+                     setIsLoading(false);
+                     toast.error("Location request timed out. Please click Verify again and quickly select 'Allow'.");
+                  }
+                  return;
+               }
+
+               fallbackTriggered = true;
+               setIsLoading(false);
+               toast.error("Failed to retrieve accurate location.");
+            },
+            options
+         );
+      };
 
       return {
          isLoading,

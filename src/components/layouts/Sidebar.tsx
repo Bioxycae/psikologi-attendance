@@ -25,6 +25,7 @@ export const Sidebar = ({
 
    const handleLogout = async () => {
       clearCachedFaceDescriptor();
+      sessionStorage.clear();
       await fetch("/api/logout", {
          method: "POST",
       });

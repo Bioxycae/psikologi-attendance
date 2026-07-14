@@ -37,6 +37,7 @@ export const MobileHeader = ({
 
    const handleLogout = async () => {
       clearCachedFaceDescriptor();
+      sessionStorage.clear();
       await fetch("/api/logout", {
          method: "POST",
       });

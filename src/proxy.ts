@@ -57,5 +57,6 @@ export const config = {
       "/validate/:path*",
       "/admin/:path*",
       "/login",
+      "/api/:path*",
    ],
 };
