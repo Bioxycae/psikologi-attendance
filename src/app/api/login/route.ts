@@ -77,24 +77,14 @@ export async function POST(request: Request) {
       const ipAddress = (request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()) || request.headers.get("x-real-ip") || "127.0.0.1";
       const userAgent = request.headers.get("user-agent") || "Unknown Device";
 
-      const uaLower = userAgent.toLowerCase();
-      let deleteQuery = supabase.from("user_sessions").delete().eq("user_id", user.id);
+      const { error: deleteError } = await supabase
+         .from("user_sessions")
+         .delete()
+         .eq("user_id", user.id);
 
-      if (uaLower.includes("android")) {
-         deleteQuery = deleteQuery.ilike("device_info", "%android%");
-      } else if (uaLower.includes("windows")) {
-         deleteQuery = deleteQuery.ilike("device_info", "%windows%");
-      } else if (uaLower.includes("iphone") || uaLower.includes("ipad") || uaLower.includes("ipod")) {
-         deleteQuery = deleteQuery.or("device_info.ilike.%iphone%,device_info.ilike.%ipad%,device_info.ilike.%ipod%");
-      } else if (uaLower.includes("mac")) {
-         deleteQuery = deleteQuery.ilike("device_info", "%mac%");
-      } else if (uaLower.includes("linux")) {
-         deleteQuery = deleteQuery.ilike("device_info", "%linux%");
-      } else {
-         deleteQuery = deleteQuery.eq("device_info", userAgent);
+      if (deleteError) {
+         console.error("Gagal menghapus sesi lama:", deleteError);
       }
-
-      await deleteQuery;
 
       const { error: sessionError } = await supabase
          .from("user_sessions")
