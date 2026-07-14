@@ -40,6 +40,11 @@ export const CameraSection = ({
       )?.label ||
       "Select camera";
 
+   const isBackCamera = 
+      selectedCameraLabel.toLowerCase().includes("back") || 
+      selectedCameraLabel.toLowerCase().includes("environment") ||
+      selectedCameraLabel.toLowerCase().includes("rear");
+
    const handleSwitchCamera = () => {
       if (cameraDevices.length <= 1) return;
       const currentIndex = cameraDevices.findIndex(d => d.deviceId === selectedCamera);
@@ -70,7 +75,7 @@ export const CameraSection = ({
                muted
                style={{
                   filter: "brightness(1.15) contrast(1.05)",
-                  transform: "scaleX(-1)",
+                  transform: isBackCamera ? "scaleX(1)" : "scaleX(-1)",
                }}
                className={`absolute inset-0 h-full w-full object-cover ${
                   !isCameraOpened
