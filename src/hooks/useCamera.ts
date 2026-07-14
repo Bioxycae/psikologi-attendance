@@ -52,7 +52,10 @@ export const useCamera =
          async () => {
             try {
                await navigator.mediaDevices.getUserMedia({
-                  video: true,
+                  video: {
+                     width: { ideal: 1280 },
+                     height: { ideal: 720 },
+                  },
                });
 
                const devices =
@@ -131,8 +134,13 @@ export const useCamera =
                               exact:
                                  selectedCamera,
                            },
+                           width: { ideal: 1280 },
+                           height: { ideal: 720 },
                         }
-                        : true,
+                        : {
+                           width: { ideal: 1280 },
+                           height: { ideal: 720 },
+                        },
                   });
 
                streamRef.current =
