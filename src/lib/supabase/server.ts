@@ -15,7 +15,9 @@ export const createServerSupabase =
             },
             global: {
                fetch: (url, options) => {
-                  return fetch(url, { ...options, cache: "no-store" });
+                  const newUrl = new URL(url.toString());
+                  newUrl.searchParams.set('t', Date.now().toString());
+                  return fetch(newUrl.toString(), { ...options, cache: "no-store" });
                },
             },
          }

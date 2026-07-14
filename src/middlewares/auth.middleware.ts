@@ -15,9 +15,11 @@ export const authMiddleware = (
 
       const proto = request.headers.get("x-forwarded-proto") || "http";
       const host = request.headers.get("x-forwarded-host") || request.headers.get("host") || "localhost";
-      return NextResponse.redirect(
+      const response = NextResponse.redirect(
          new URL("/login", `${proto}://${host}`)
       );
+      response.cookies.delete("session");
+      return response;
    }
 
    return null;
