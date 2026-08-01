@@ -49,21 +49,24 @@ export const useCamera =
       ] = useState("");
 
       const loadCameraDevices =
-         async () => {
+         async (isMounted: { current: boolean }) => {
+            // Wait 500ms to allow React Strict Mode to unmount if it's the first ghost mount
+            await new Promise(r => setTimeout(r, 500));
+            
+            // If component unmounted during the delay, abort to prevent ghost lock!
+            if (!isMounted.current) return;
+
             try {
-               try {
-                  const tempStream = await navigator.mediaDevices.getUserMedia({
-                     video: {
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 },
-                     },
-                  });
-                  
-                  // MUST STOP TRACKS SO CAMERA IS NOT LOCKED ON WINDOWS
-                  tempStream.getTracks().forEach(track => track.stop());
-               } catch (e) {
-                  console.warn("Failed temp getUserMedia (camera might be in use by previous page):", e);
-               }
+               const tempStream = await navigator.mediaDevices.getUserMedia({
+                  video: {
+                     width: { ideal: 1280 },
+                     height: { ideal: 720 },
+                  },
+               });
+               
+               // Keep the stream alive in streamRef to hold the hardware lock open
+               // This prevents the OS from tearing down the camera, which causes AbortError
+               streamRef.current = tempStream;
 
                const devices =
                   await navigator.mediaDevices.enumerateDevices();
@@ -94,13 +97,18 @@ export const useCamera =
                   cameras
                );
 
-               if (
-                  cameras.length > 0
-               ) {
-                  setSelectedCamera(
-                     cameras[0]
-                        .deviceId
-                  );
+               if (cameras.length > 0) {
+                  const activeTrack = tempStream.getVideoTracks()[0];
+                  const activeDeviceId = activeTrack?.getSettings().deviceId;
+                  
+                  // Check if the active stream's deviceId matches a camera in the list
+                  const matchingCamera = cameras.find(c => c.deviceId === activeDeviceId);
+                  
+                  if (matchingCamera) {
+                     setSelectedCamera(matchingCamera.deviceId);
+                  } else {
+                     setSelectedCamera(cameras[0].deviceId);
+                  }
                }
             } catch (
             error
@@ -122,44 +130,35 @@ export const useCamera =
                   true
                );
 
-               if (
-                  streamRef.current
-               ) {
-                  streamRef.current
-                     .getTracks()
-                     .forEach(
-                        track =>
-                           track.stop()
-                     );
-               }
-
-               let stream: MediaStream | null = null;
-               for (let i = 0; i < 3; i++) {
-                  try {
-                     stream = await navigator.mediaDevices.getUserMedia({
-                        video: selectedCamera
-                           ? {
-                              deviceId: { exact: selectedCamera },
-                              width: { ideal: 1280 },
-                              height: { ideal: 720 },
-                           }
-                           : {
-                              width: { ideal: 1280 },
-                              height: { ideal: 720 },
-                           },
-                     });
-                     break;
-                  } catch (err) {
-                     if (i === 2) throw err;
-                     console.warn("Camera might be locked, retrying in 500ms...", err);
-                     await new Promise(r => setTimeout(r, 500));
-                  }
-               }
+               const oldStream = streamRef.current;
                
-               if (!stream) throw new Error("Could not acquire camera stream");
+               // Stop the old stream FIRST to release the hardware lock in Windows!
+               if (oldStream) {
+                  oldStream.getTracks().forEach(track => {
+                     track.stop();
+                  });
+                  // Wait a tiny bit for the OS to completely release the USB hardware lock
+                  await new Promise(r => setTimeout(r, 150));
+               }
 
-               streamRef.current =
-                  stream;
+               const stream =
+                  await navigator.mediaDevices.getUserMedia({
+                     video: selectedCamera
+                        ? {
+                           deviceId: {
+                              exact:
+                                 selectedCamera,
+                           },
+                           width: { ideal: 1280 },
+                           height: { ideal: 720 },
+                        }
+                        : {
+                           width: { ideal: 1280 },
+                           height: { ideal: 720 },
+                        },
+                  });
+
+               streamRef.current = stream;
 
                if (
                   videoRef.current
@@ -216,7 +215,12 @@ export const useCamera =
       };
 
       useEffect(() => {
-         loadCameraDevices();
+         const isMounted = { current: true };
+         loadCameraDevices(isMounted);
+
+         return () => {
+            isMounted.current = false;
+         };
       }, []);
 
       useEffect(() => {

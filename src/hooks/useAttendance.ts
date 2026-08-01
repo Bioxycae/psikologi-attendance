@@ -427,17 +427,10 @@ export const useAttendance =
                      "Checkout completed"
                   );
                }
-
-               resetVerification();
-
-               setTimeout(() => {
-                  router.push(
-                     "/dashboard"
-                  );
-               }, 1000);
-            } catch (
-            error
-            ) {
+               // Do not call resetVerification() here to prevent the UI from flickering 
+               // back to the 'Location Check' screen before the router transition finishes.
+               router.push("/dashboard");
+            } catch (error) {
                console.error(
                   error
                );
