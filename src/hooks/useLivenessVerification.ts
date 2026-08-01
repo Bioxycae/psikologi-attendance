@@ -153,7 +153,8 @@ export const useLivenessVerification = (
                referenceDescriptor
             );
             
-            if (distance > 0.5) {
+            const distanceThreshold = currentChallenge === "angry" ? 0.58 : 0.5;
+            if (distance > distanceThreshold) {
                mismatchCountRef.current += 1;
                if (mismatchCountRef.current >= 3) {
                   toast.dismiss("liveness");
@@ -180,8 +181,9 @@ export const useLivenessVerification = (
             currentChallenge
             ];
 
+         const minScore = currentChallenge === "angry" ? 0.6 : 0.7;
          if (
-            score < 0.7 ||
+            score < minScore ||
             completedChallenges.includes(
                currentChallenge
             )
