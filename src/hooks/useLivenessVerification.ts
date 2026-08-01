@@ -9,7 +9,6 @@ import {
 
 import * as faceapi from "face-api.js";
 import { toast } from "sonner";
-import { getCachedFaceDescriptor } from "@/lib/faceDescriptorCache";
 
 const expressions = [
    "happy",
@@ -181,7 +180,7 @@ export const useLivenessVerification = (
             currentChallenge
             ];
 
-         const minScore = currentChallenge === "angry" ? 0.6 : 0.7;
+         const minScore = currentChallenge === "angry" ? 0.35 : 0.7;
          if (
             score < minScore ||
             completedChallenges.includes(
