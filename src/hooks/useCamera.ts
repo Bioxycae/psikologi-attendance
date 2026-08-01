@@ -51,12 +51,19 @@ export const useCamera =
       const loadCameraDevices =
          async () => {
             try {
-               await navigator.mediaDevices.getUserMedia({
-                  video: {
-                     width: { ideal: 1280 },
-                     height: { ideal: 720 },
-                  },
-               });
+               try {
+                  const tempStream = await navigator.mediaDevices.getUserMedia({
+                     video: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                     },
+                  });
+                  
+                  // MUST STOP TRACKS SO CAMERA IS NOT LOCKED ON WINDOWS
+                  tempStream.getTracks().forEach(track => track.stop());
+               } catch (e) {
+                  console.warn("Failed temp getUserMedia (camera might be in use by previous page):", e);
+               }
 
                const devices =
                   await navigator.mediaDevices.enumerateDevices();
@@ -126,22 +133,30 @@ export const useCamera =
                      );
                }
 
-               const stream =
-                  await navigator.mediaDevices.getUserMedia({
-                     video: selectedCamera
-                        ? {
-                           deviceId: {
-                              exact:
-                                 selectedCamera,
+               let stream: MediaStream | null = null;
+               for (let i = 0; i < 3; i++) {
+                  try {
+                     stream = await navigator.mediaDevices.getUserMedia({
+                        video: selectedCamera
+                           ? {
+                              deviceId: { exact: selectedCamera },
+                              width: { ideal: 1280 },
+                              height: { ideal: 720 },
+                           }
+                           : {
+                              width: { ideal: 1280 },
+                              height: { ideal: 720 },
                            },
-                           width: { ideal: 1280 },
-                           height: { ideal: 720 },
-                        }
-                        : {
-                           width: { ideal: 1280 },
-                           height: { ideal: 720 },
-                        },
-                  });
+                     });
+                     break;
+                  } catch (err) {
+                     if (i === 2) throw err;
+                     console.warn("Camera might be locked, retrying in 500ms...", err);
+                     await new Promise(r => setTimeout(r, 500));
+                  }
+               }
+               
+               if (!stream) throw new Error("Could not acquire camera stream");
 
                streamRef.current =
                   stream;
